@@ -17,6 +17,3 @@ Classes:
 
 - [David Silver's Reinforcement Learning Course (UCL, 2015)](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
 - [CS294 - Deep Reinforcement Learning (Berkeley, Fall 2015)](http://rll.berkeley.edu/deeprlcourse/)
-- [CS 8803 - Reinforcement Learning (Georgia Tech)](https://www.udacity.com/course/reinforcement-learning--ud600)
-- [CS885 - Reinforcement Learning (UWaterloo), Spring 2018](https://cs.uwaterloo.ca/~ppoupart/teaching/cs885-spring18/)
-- [CS294-112 - Deep Reinforcement Learning (UC Berkeley)](http://rail.eecs.berkeley.edu/deeprlcourse/)
