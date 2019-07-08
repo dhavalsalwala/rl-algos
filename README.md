@@ -7,7 +7,7 @@ This repository provides code, exercises and solutions for popular Reinforcement
 
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) for neural network implementations.
 
-### Resources
+### References
 
 Textbooks:
 
@@ -17,3 +17,7 @@ Classes:
 
 - [David Silver's Reinforcement Learning Course (UCL, 2015)](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
 - [CS294 - Deep Reinforcement Learning (Berkeley, Fall 2015)](http://rll.berkeley.edu/deeprlcourse/)
+
+Lib (Custom Environments based on OpenAI gym)
+
+- https://github.com/dennybritz/reinforcement-learning
