@@ -42,7 +42,7 @@ def play_episodes(env, n_episodes, Q):
 env_name = 'FrozenLake-v0'
 env = gym.make(env_name)
 agent = QLearningAgent(env_name, env, 50000, start_learning_rate=0.1, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.001,
-                       make_checkpoint=True, dir_location="/home/dsalwala/NUIG/Thesis/rl-algos/data")
+                       make_checkpoint=True)
 
 Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/FrozenLake-v0_40000.npy")
 

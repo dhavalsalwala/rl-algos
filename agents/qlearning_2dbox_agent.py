@@ -1,4 +1,3 @@
-import itertools
 import sys
 import time
 
@@ -9,29 +8,31 @@ import agents
 
 class QLearningAgent(agents.BaseAgent):
 
-    def __init__(self, env, num_episodes, **kwargs):
-        super(QLearningAgent, self).__init__(env, num_episodes, **kwargs)
-        self.nS = (env.observation_space.high - env.observation_space.low) * np.array([10, 100])
-        self.nS = np.round(self.nS, 0).astype(int) + 1
+    def __init__(self, env_name, env, num_episodes, **kwargs):
+        super(QLearningAgent, self).__init__(env_name, env, num_episodes, **kwargs)
         self.q_table = np.random.uniform(low=-1, high=1, size=(self.nS[0], self.nS[1], self.nA))
+        self.update_counts = np.zeros((self.nS[0], self.nS[1], self.nA), dtype=np.dtype(int))
 
     def _learn(self, state, action, next_state, next_action, R):
+
+        # reduce learning rate based on state visits
+        self.learning_rate = self.start_learning_rate / (1.0 + self.update_counts[state[0]][state[1]][action] * self.decay_rate)
+        self.update_counts[state[0]][state[1]][action] += 1
 
         next_q = np.max(self.q_table[next_state[0]][next_state[1]])
         self.q_table[state[0]][state[1]][action] += self.learning_rate * (R + self.discount_factor * next_q -
                                                                           self.q_table[state[0]][state[1]][action])
 
     def _get_action(self, state):
-        return self._get_epsilon_greedy_policy_v0(state)
+        return self._get_epsilon_greedy_policy_v1(state)
 
     def _get_epsilon_greedy_policy_v1(self, state):
-        if np.random.rand() < self.epsilon:
-            # take random action
-            action = np.random.choice(self.nA)
+        if np.random.uniform(0, 1) < (1 - self.epsilon):
+            # take random action: EXPLORE
+            action = self.env.action_space.sample()
         else:
             # take action according to the q function table
-            state_action = self.q_table[state[0]][state[1]]
-            action = np.argmax(state_action)
+            action = np.argmax(self.q_table[state[0]][state[1]])
         return action
 
     def _get_epsilon_greedy_policy_v0(self, state):
@@ -40,24 +41,23 @@ class QLearningAgent(agents.BaseAgent):
         action_prob[best_action] += (1.0 - self.epsilon)
         return np.random.choice(np.arange(len(action_prob)), p=action_prob)
 
-    def accuracy(self):
-        raise NotImplementedError
-
-    def _update_statistics(self, R, time_step, i_episode):
-        self.stats.episode_rewards[i_episode] += R
-        self.stats.episode_lengths[i_episode] = time_step
-
     def train(self):
 
-        super(QLearningAgent, self).train("Q Learning", 1.0)
-
-        # Calculate episodic reduction in epsilon
-        reduction = (self.epsilon - self.min_epsilon) / self.num_episodes
-
+        super(QLearningAgent, self).train("Q Learning", 2.0)
         for i_episode in range(self.num_episodes):
 
-            print("\rRunning Episode {}/{}.".format(i_episode + 1, self.num_episodes), end="")
+            print("\rRunning Episode {}/{}".format(i_episode + 1, self.num_episodes), end="")
             sys.stdout.flush()
+
+            # reduce epsilon (because we need less and less exploration)
+            self.epsilon = self.start_epsilon / (1.0 + i_episode * self.decay_rate)
+
+            # display reward score
+            self.score(i_episode)
+
+            # make checkpoint
+            if self.make_checkpoint:
+                self.save(self.q_table, i_episode)
 
             # Reset the environment and pick the first action
             state = self.env.reset()
@@ -67,7 +67,7 @@ class QLearningAgent(agents.BaseAgent):
             action = self._get_action(state_adj)
 
             # One step in the environment
-            for time_step in itertools.count():
+            for time_step in range(self.MAX_STEPS):
 
                 # render environment
                 if self.render_env:
@@ -93,9 +93,8 @@ class QLearningAgent(agents.BaseAgent):
                 action = next_action
                 state_adj = next_state_adj
 
-            # Decay epsilon
-            if self.epsilon > self.min_epsilon:
-                self.epsilon -= reduction
+        if self.make_checkpoint:
+            self.save(self.q_table, self.num_episodes, force_save=True)
 
-        self.exit("Training Completed. Q values published successfully at agent.q_table. "
+        self.exit(self.q_table, "Training Completed. Q values published successfully at agent.q_table. "
                   "All evaluation statistics are available at agent.stats")

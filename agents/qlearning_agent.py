@@ -87,6 +87,8 @@ class QLearningAgent(agents.BaseAgent):
                 action = next_action
                 state = next_state
 
-        # self.save(self.q_table)
+        if self.make_checkpoint:
+            self.save(self.q_table, self.num_episodes, force_save=True)
+
         self.exit(self.q_table, "Training Completed. Q values published successfully at agent.q_table. "
                   "All evaluation statistics are available at agent.stats")
