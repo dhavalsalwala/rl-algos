@@ -41,13 +41,13 @@ def play_episodes(env, n_episodes, Q):
 # Load a Windy GridWorld environment
 env_name = 'FrozenLake-v0'
 env = gym.make(env_name)
-agent = QLearningAgent(env_name, env, 50000, start_learning_rate=0.1, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.001,
+agent = QLearningAgent(env_name, env, 10000, start_learning_rate=0.1, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.001,
                        make_checkpoint=True)
-
-Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/FrozenLake-v0_40000.npy")
+agent.train()
+# Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/FrozenLake-v0_40000.npy")
 
 # Search for a Q values
-# Q, stats = agent.q_table, agent.stats
+Q, stats = agent.q_table, agent.stats
 
 n_episodes = 1000
 iteration_name = "QLearning"
