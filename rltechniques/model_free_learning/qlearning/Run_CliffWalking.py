@@ -1,9 +1,11 @@
 import sys
 import time
-from lib import plotting
+
 import numpy as np
-from lib.envs.cliff_walking import CliffWalkingEnv
+
 from agents.qlearning_agent import QLearningAgent
+from lib import plotting
+from lib.envs.cliff_walking import CliffWalkingEnv
 
 
 def play_episode(env, Q):
@@ -31,7 +33,9 @@ def play_episode(env, Q):
 
 # Load a Windy GridWorld environment
 environment = CliffWalkingEnv()
-agent = QLearningAgent(environment, 200)
+agent = QLearningAgent("CliffWalking-v0", environment, 1000, start_learning_rate=0.1, start_epsilon=1.0,
+                       discount_factor=0.95, decay_rate=0.001, make_checkpoint=True,
+                       dir_location="/home/dsalwala/NUIG/Thesis/rl-algos/data")
 agent.train()
 
 

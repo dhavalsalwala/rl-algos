@@ -1,9 +1,10 @@
-import agents
-import numpy as np
-import sys
 import itertools
+import sys
 import time
-from collections import defaultdict
+
+import numpy as np
+
+import agents
 
 
 class QLearningAgent(agents.BaseAgent):
@@ -16,9 +17,7 @@ class QLearningAgent(agents.BaseAgent):
 
     def _learn(self, state, action, next_state, next_action, R):
 
-        next_best_action = np.argmax(self.q_table[next_state[0]][next_state[1]])
-        next_q = self.q_table[next_state[0]][next_state[1]][next_best_action]
-
+        next_q = np.max(self.q_table[next_state[0]][next_state[1]])
         self.q_table[state[0]][state[1]][action] += self.learning_rate * (R + self.discount_factor * next_q -
                                                                           self.q_table[state[0]][state[1]][action])
 
