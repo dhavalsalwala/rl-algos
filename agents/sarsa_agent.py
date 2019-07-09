@@ -1,9 +1,12 @@
-import agents
-import numpy as np
-import sys, math
 import itertools
+import math
+import sys
 import time
 from collections import defaultdict
+
+import numpy as np
+
+import agents
 
 
 class SARSAAgent(agents.BaseAgent):
@@ -40,13 +43,13 @@ class SARSAAgent(agents.BaseAgent):
         return self._get_epsilon_greedy_policy_v0(state)
 
     def _get_epsilon_greedy_policy_v1(self, state):
-        if np.random.rand() < self.epsilon:
-            # take random action
-            action = np.random.choice(self.nA)
-        else:
+        if np.random.uniform(0, 1) < (1 - self.epsilon):
             # take action according to the q function table
-            state_action = self.q_table[state]
-            action = np.argmax(state_action)
+            action = np.argmax(self.q_table[state])
+
+        else:
+            # take random action: EXPLORE
+            action = self.env.action_space.sample()
         return action
 
     def _get_epsilon_greedy_policy_v0(self, state):
