@@ -32,10 +32,10 @@ def play_episode(environment, Q):
 # Load a Windy GridWorld environment
 env_name = "MountainCar-v0"
 env = gym.make(env_name)
-agent = QLearningAgent(env_name, env, 10000, start_learning_rate=0.1, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.001,
+agent = QLearningAgent(env_name, env, 50000, start_learning_rate=0.1, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.001,
                        make_checkpoint=True, is_state_box=True)
 # agent.train()
-Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/MountainCar-v0_1000.npy")
+Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/MountainCar-v0_30000.npy")
 
 # Search for a Q values
 # Q, stats = agent.q_table, agent.stats

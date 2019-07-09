@@ -28,18 +28,13 @@ class QLearningAgent(agents.BaseAgent):
 
     def _get_epsilon_greedy_policy_v1(self, state):
         if np.random.uniform(0, 1) < (1 - self.epsilon):
-            # take random action: EXPLORE
-            action = self.env.action_space.sample()
-        else:
             # take action according to the q function table
             action = np.argmax(self.q_table[state])
-        return action
 
-    def _get_epsilon_greedy_policy_v0(self, state):
-        action_prob = np.ones(self.nA, dtype=float) * self.epsilon / self.nA
-        best_action = np.argmax(self.q_table[state])
-        action_prob[best_action] += (1.0 - self.epsilon)
-        return np.random.choice(np.arange(len(action_prob)), p=action_prob)
+        else:
+            # take random action: EXPLORE
+            action = self.env.action_space.sample()
+        return action
 
     def train(self):
 
@@ -52,7 +47,7 @@ class QLearningAgent(agents.BaseAgent):
             # reduce epsilon (because we need less and less exploration)
             self.epsilon = self.start_epsilon / (1.0 + i_episode * self.decay_rate)
 
-            # display rseward score
+            # display reward score
             self.score(i_episode)
 
             # make checkpoint

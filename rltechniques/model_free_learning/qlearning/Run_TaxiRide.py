@@ -45,7 +45,7 @@ def play_episode(environment, Q, episodes):
 # Load a Windy GridWorld environment
 env_name = 'Taxi-v2'
 env = gym.make(env_name)
-agent = QLearningAgent(env_name, env, 10000, start_learning_rate=0.1, start_epsilon=1.0,
+agent = QLearningAgent(env_name, env, 50000, start_learning_rate=0.1, start_epsilon=1.0,
                        discount_factor=0.95, decay_rate=0.001, make_checkpoint=True)
 agent.train()
 # Q = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/Taxi-v2_10000.npy")

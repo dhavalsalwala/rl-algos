@@ -65,7 +65,7 @@ class BaseAgent:
         if n_episode % num == 0 and n_episode != 0:
             avg = np.mean(self.stats.episode_rewards[(n_episode + 1 - num):(n_episode + 1)])
             print("  |  Avg Reward (last " + str(num) + ")=", avg, " | Total Avg Reward =",
-                  np.sum(self.stats.episode_rewards) / n_episode, " | Epsilon =", self.epsilon)
+                  np.sum(self.stats.episode_rewards[1:]) / n_episode, " | Epsilon =", self.epsilon)
 
     def _update_statistics(self, R, time_step, i_episode):
         self.stats.episode_rewards[i_episode] += R
