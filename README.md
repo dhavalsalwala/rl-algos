@@ -42,4 +42,4 @@ Lib (Custom Environments based on OpenAI gym)
 
 ### Contact
 
-- If you have suggestion or you find any bug, please report it  to me at mailto:dhavalsalwala@gmail.com
+- If you have suggestion or you came across any bug/issue, shoot a mail to me at mailto:dhavalsalwala@gmail.com
