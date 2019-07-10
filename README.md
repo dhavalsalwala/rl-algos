@@ -40,6 +40,11 @@ Lib (Custom Environments based on OpenAI gym)
 
 - https://github.com/dennybritz/reinforcement-learning
 
+GitHub Resources:
+
+- I highly recommend School of AI's Free Course [Move37](https://www.theschool.ai/courses/move-37-course/)
+GitHub: https://github.com/colinskow/move37
+
 ### Contact
 
 - If you have suggestion or you came across any bug/issue, shoot a mail to me at mailto:dhavalsalwala@gmail.com
