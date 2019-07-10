@@ -7,6 +7,11 @@ This repository provides code, exercises and solutions for popular Reinforcement
 
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) for neural network implementations.
 
+Reinforcement Techniques:
+
+- Dynamic Programming
+  - [Policy and Value Iteration- Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/dynamic_programming/Run_FrozenLake.py)
+
 ### References
 
 Textbooks:
