@@ -1,4 +1,5 @@
 import os
+import time
 
 import numpy as np
 
@@ -7,15 +8,16 @@ from lib import plotting
 
 class BaseAgent:
 
-    def __init__(self, env_name, env, num_episodes, n_step=1, discount_factor=0.95, start_learning_rate=0.1, start_epsilon=1.0,
-                 decay_rate=0.001, action_space_n=None, render_env=False, make_checkpoint=False, is_state_box=False):
+    def __init__(self, env_name, env, num_episodes, n_step=1, discount_factor=0.95, learning_rate=0.01, start_learning_rate=0.1, start_epsilon=1.0,
+                 decay_rate=0.001, action_space_n=None, render_env=False, make_checkpoint=False, is_state_box=False, batch_size=25):
 
+        self.start_time = 0
         self.env_name = env_name
         self.env = env
         self.MAX_STEPS = 200
         self.num_episodes = num_episodes
         self.start_learning_rate = start_learning_rate
-        self.learning_rate = 0
+        self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.start_epsilon = start_epsilon
         self.epsilon = 0
@@ -26,6 +28,7 @@ class BaseAgent:
         self.is_state_box = is_state_box
         self.action_space_n = action_space_n
         self.render_env = render_env
+        self.batch_size = batch_size
         self.stats = plotting.EpisodeStats(
             episode_lengths=np.zeros(num_episodes),
             episode_rewards=np.zeros(num_episodes))
@@ -36,8 +39,9 @@ class BaseAgent:
             self.nA = action_space_n
 
         if self.is_state_box:
-            self.nS = (env.observation_space.high - env.observation_space.low) * np.array([10, 100])
-            self.nS = np.round(self.nS, 0).astype(int) + 1
+            self.nS = self.env.observation_space.shape[0]
+        else:
+            self.nS = self.env.observation_space.n
 
     def _learn(self):
         raise NotImplementedError
@@ -47,15 +51,17 @@ class BaseAgent:
         print("Name :", self.env_name)
         print("\nObservation\n--------------------------------")
         if self.is_state_box:
-            print("Shape :", self.nS[0], " X ", self.nS[1])
+            print("Shape : [", self.nS, ",]")
         else:
-            print("Shape :", self.env.observation_space.n)
+            print("Shape :", self.nS)
         print("\nAction\n--------------------------------")
-        print("Shape :", self.env.action_space.n, "\n")
+        print("Shape :", self.nA, "\n")
         if title is not None and version is not None:
             print("\nTraining started using " + title + " Agent v"+str(version)+".\n")
         else:
             print("\nTraining started.\n")
+
+        self.start_time = time.time()
 
     def _get_action(self):
         raise NotImplementedError
@@ -82,8 +88,9 @@ class BaseAgent:
     def load(file):
         return np.load(file)
 
-    @staticmethod
-    def exit(data, message):
-        print("\n\n"+message+"\n")
+    def exit(self, data, message):
+        print("Training Completed.\n--------------------------------")
+        print("Total Time: " + str(time.time() - self.start_time) + " seconds.")
+        print(message + "\n")
         print("\nQ Table\n--------------------------------")
         print(data)
