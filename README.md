@@ -20,7 +20,7 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
   - Q Learning
     - [Cliff Walking](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_CliffWalking.py)
     - [Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_FrozenLake.py)
-    - [Mountain Car](hhttps://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_MountainCar.py)
+    - [Mountain Car](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_MountainCar.py)
     - [Taxi Ride](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_TaxiRide.py)
   - Deep Q Network
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/dqn/Run_CartPole.py)
