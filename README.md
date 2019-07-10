@@ -39,3 +39,7 @@ Classes:
 Lib (Custom Environments based on OpenAI gym)
 
 - https://github.com/dennybritz/reinforcement-learning
+
+### Contact
+
+- If you have suggestion or you find any bug, please report it  to me at mailto:dhavalsalwala@gmail.com
