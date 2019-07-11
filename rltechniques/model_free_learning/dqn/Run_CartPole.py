@@ -48,14 +48,14 @@ env_name = "CartPole-v0"
 env = gym.make(env_name)
 agent = DQNAgent(env_name, env, 10, learning_rate=0.001, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.05,
                  make_checkpoint=True, is_state_box=True)
-# agent.train()
-nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_50.npy")
-stats = plotting.EpisodeStats(
-    episode_lengths=episode_len,
-    episode_rewards=rewards)
+agent.train()
+# nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_50.npy")
+# stats = plotting.EpisodeStats(
+#    episode_lengths=episode_len,
+#    episode_rewards=rewards)
 
 # Search for a Q values
-# nn, stats = agent.nn, agent.stats
+nn, stats = agent.nn, agent.stats
 
 play_episode(env, nn, 1)
 

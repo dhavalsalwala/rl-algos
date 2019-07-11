@@ -35,7 +35,6 @@ class DQNAgent(agents.BaseAgent):
         self.replay_buffer.append((state, action, reward, next_state, done))
 
     def _learn(self):
-
         minibatch = random.sample(self.replay_buffer, self.batch_size)
         for state, action, reward, next_state, done in minibatch:
             if done:
@@ -47,9 +46,6 @@ class DQNAgent(agents.BaseAgent):
                 target = reward + self.discount_factor * np.amax(val)
 
             self.nn[action].fit(state, [[target]], epochs=1, verbose=0)
-
-        # if self.epsilon > self.epsilon_min:
-        #    self.epsilon *= self.epsilon_decay
 
     def _get_action(self, state):
         return self._get_epsilon_greedy_policy_v1(state)
@@ -67,7 +63,6 @@ class DQNAgent(agents.BaseAgent):
         return action
 
     def train(self):
-
         super(DQNAgent, self).train("Q Learning", 2.0)
         for i_episode in range(self.num_episodes):
 
