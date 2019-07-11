@@ -33,7 +33,7 @@ Textbooks:
 
 Youtube Lecture Series:
 
-- [Introduction to Reinforcement Learning by David Silver](https://youtu.be/2pWv7GOvuf0)
+- [Introduction to Reinforcement Learning by David Silver](https://www.youtube.com/watch?v=2pWv7GOvuf0&list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ)
 
 Classes:
 
