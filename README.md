@@ -7,7 +7,7 @@ This repository provides solutions to the most popular Reinforcement Learning al
 
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
-### Reinforcement Techniques:
+### Reinforcement Techniques
 
 - Dynamic Programming
   - [Policy and Value Iteration- Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/dynamic_programming/Run_FrozenLake.py)
@@ -30,6 +30,10 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 Textbooks:
 
 - [Reinforcement Learning: An Introduction (2nd Edition)](http://incompleteideas.net/book/RLbook2018.pdf)
+
+Youtube Lecture Series:
+
+- [Introduction to Reinforcement Learning by David Silver](https://youtu.be/2pWv7GOvuf0)
 
 Classes:
 
