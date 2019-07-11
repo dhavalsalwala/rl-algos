@@ -35,6 +35,10 @@ Youtube Lecture Series:
 
 - [Introduction to Reinforcement Learning by David Silver](https://www.youtube.com/watch?v=2pWv7GOvuf0&list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ)
 
+MOOC:
+
+- [School of AI's Free Course - Move37](https://www.theschool.ai/courses/move-37-course/)
+
 Classes:
 
 - [David Silver's Reinforcement Learning Course (UCL, 2015)](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
