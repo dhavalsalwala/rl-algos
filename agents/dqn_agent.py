@@ -117,5 +117,5 @@ class DQNAgent(agents.BaseAgent):
         if self.make_checkpoint:
             self.save(self.nn, self.num_episodes, force_save=True)
 
-        self.exit(self.nn, "DQN agents trained successfully and is available at agent.nn. "
+        self.exit(self.nn, "DQN agents trained successfully and are available at agent.nn. "
                            "All evaluation statistics are available at agent.stats")
