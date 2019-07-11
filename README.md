@@ -1,6 +1,6 @@
 ### Overview
 
-This repository provides code, exercises and solutions for popular Reinforcement Learning algorithms. These are meant to serve as a learning tool to complement the theoretical materials from
+This repository provides solutions to the most popular Reinforcement Learning algorithms. These are meant to serve as a learning tool to complement the theoretical materials from
 
 - [Reinforcement Learning: An Introduction (2nd Edition)](http://incompleteideas.net/book/RLbook2018.pdf)
 - [David Silver's Reinforcement Learning Course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
