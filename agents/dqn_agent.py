@@ -63,7 +63,7 @@ class DQNAgent(agents.BaseAgent):
         return action
 
     def train(self):
-        super(DQNAgent, self).train("Q Learning", 2.0)
+        super(DQNAgent, self).train("DQN", 2.0)
         for i_episode in range(self.num_episodes):
 
             print("\rRunning Episode {}/{}".format(i_episode, self.num_episodes), end="")
@@ -117,5 +117,5 @@ class DQNAgent(agents.BaseAgent):
         if self.make_checkpoint:
             self.save(self.nn, self.num_episodes, force_save=True)
 
-        self.exit(self.nn, "Q values published successfully at agent.q_table. "
+        self.exit(self.nn, "DQN agents trained successfully and is available at agent.nn. "
                            "All evaluation statistics are available at agent.stats")
