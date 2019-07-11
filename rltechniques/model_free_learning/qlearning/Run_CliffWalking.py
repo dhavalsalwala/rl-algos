@@ -35,11 +35,14 @@ def play_episode(env, Q):
 environment = CliffWalkingEnv()
 agent = QLearningAgent("CliffWalking-v0", environment, 1000, start_learning_rate=0.1, start_epsilon=1.0,
                        discount_factor=0.95, decay_rate=0.001, make_checkpoint=True)
-agent.train()
-
+# agent.train()
+Q, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CliffWalking-v0_1000.npy")
+stats = plotting.EpisodeStats(
+    episode_lengths=episode_len,
+    episode_rewards=rewards)
 
 # Search for a Q values
-Q, stats = agent.q_table, agent.stats
+# Q, stats = agent.q_table, agent.stats
 
 play_episode(environment, Q)
 

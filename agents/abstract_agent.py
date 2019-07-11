@@ -1,3 +1,4 @@
+import math
 import os
 import time
 
@@ -67,8 +68,8 @@ class BaseAgent:
         raise NotImplementedError
 
     def score(self, n_episode):
-        num = round(self.num_episodes / 50)
-        if n_episode % num == 0 and n_episode != 0:
+        num = math.ceil(self.num_episodes * 0.02)
+        if n_episode != 0 and n_episode % num == 0:
             avg = np.mean(self.stats.episode_rewards[(n_episode + 1 - num):(n_episode + 1)])
             print("  |  Avg Reward (last " + str(num) + ")=", avg, " | Total Avg Reward =",
                   np.sum(self.stats.episode_rewards[1:]) / n_episode, " | Epsilon =", self.epsilon)
@@ -78,10 +79,10 @@ class BaseAgent:
         self.stats.episode_lengths[i_episode] = time_step
 
     def save(self, data, i_episode, force_save=False):
-        num = round(self.num_episodes / 5)
+        num = math.ceil(self.num_episodes * 0.2)
         if force_save or (i_episode % num == 0 and i_episode != 0):
             file_path = os.path.join(self.dir_location, self.env_name + '_' + str(i_episode) + '.npy')
-            np.save(file_path, data)
+            np.save(file_path, (data, self.stats.episode_rewards, self.stats.episode_lengths))
             print("\nSaved checkpoint to: ", file_path, "\n")
 
     @staticmethod

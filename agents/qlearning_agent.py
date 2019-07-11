@@ -41,7 +41,7 @@ class QLearningAgent(agents.BaseAgent):
         super(QLearningAgent, self).train("Q Learning", 2.0)
         for i_episode in range(self.num_episodes):
 
-            print("\rRunning Episode {}/{}".format(i_episode + 1, self.num_episodes), end="")
+            print("\rRunning Episode {}/{}".format(i_episode, self.num_episodes), end="")
             sys.stdout.flush()
 
             # reduce epsilon (because we need less and less exploration)
