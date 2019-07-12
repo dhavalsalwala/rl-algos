@@ -10,7 +10,8 @@ from lib import plotting
 class BaseAgent:
 
     def __init__(self, env_name, env, num_episodes, n_step=1, discount_factor=0.95, learning_rate=0.01, start_learning_rate=0.1, start_epsilon=1.0,
-                 decay_rate=0.001, action_space_n=None, render_env=False, make_checkpoint=False, is_state_box=False, batch_size=25):
+                 decay_rate=0.001, action_space_n=None, render_env=False, make_checkpoint=False, is_state_box=False, batch_size=25,
+                 memory_capacity=1000):
 
         self.start_time = 0
         self.env_name = env_name
@@ -30,6 +31,7 @@ class BaseAgent:
         self.action_space_n = action_space_n
         self.render_env = render_env
         self.batch_size = batch_size
+        self.memory_capacity = memory_capacity
         self.stats = plotting.EpisodeStats(
             episode_lengths=np.zeros(num_episodes),
             episode_rewards=np.zeros(num_episodes))

@@ -13,18 +13,13 @@ def play_episode(environment, nn, episodes):
 
         state = environment.reset()
         terminated = False
-
         while not terminated:
-
-            environment.render()
+            # environment.render()
 
             state = np.reshape(state, [1, environment.observation_space.shape[0]])
 
             # Select best action to perform in a current state
-            val = []
-            for i in nn:
-                val.append(i.predict(state)[0])
-            action = np.argmax(val)
+            action = np.argmax(nn.predict(state.reshape(1, env.observation_space.shape[0])))
 
             # Perform an action an observe how environment acted in response
             next_state, reward, terminated, info = environment.step(action)
@@ -46,10 +41,10 @@ def play_episode(environment, nn, episodes):
 # Load a Windy GridWorld environment
 env_name = "CartPole-v0"
 env = gym.make(env_name)
-agent = DQNAgent(env_name, env, 10, learning_rate=0.001, start_epsilon=1.0, discount_factor=0.95, decay_rate=0.05,
-                 make_checkpoint=True, is_state_box=True)
+agent = DQNAgent(env_name, env, 5000, learning_rate=0.00025, start_epsilon=1.0, discount_factor=0.99, decay_rate=0.001,
+                 make_checkpoint=True, is_state_box=True, batch_size=64, memory_capacity=100000)
 agent.train()
-# nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_50.npy")
+# nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_1000.npy")
 # stats = plotting.EpisodeStats(
 #    episode_lengths=episode_len,
 #    episode_rewards=rewards)
@@ -57,7 +52,7 @@ agent.train()
 # Search for a Q values
 nn, stats = agent.nn, agent.stats
 
-play_episode(env, nn, 1)
+play_episode(env, nn, 100)
 
 env.close()
 
