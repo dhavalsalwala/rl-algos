@@ -41,7 +41,7 @@ def play_episode(environment, nn, episodes):
 # Load a Windy GridWorld environment
 env_name = "CartPole-v0"
 env = gym.make(env_name)
-agent = DQNAgent(env_name, env, 5000, learning_rate=0.00025, start_epsilon=1.0, discount_factor=0.99, decay_rate=0.001,
+agent = DQNAgent(env_name, env, 1000, learning_rate=0.00025, start_epsilon=1.0, discount_factor=0.99, decay_rate=0.001,
                  make_checkpoint=True, is_state_box=True, batch_size=64, memory_capacity=100000)
 agent.train()
 # nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_1000.npy")

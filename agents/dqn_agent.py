@@ -68,6 +68,7 @@ class DQNAgent(agents.BaseAgent):
 
     def train(self):
         super(DQNAgent, self).train("DQN", 2.0)
+        total_time_steps = 1
         for i_episode in range(self.num_episodes):
 
             print("\rRunning Episode {}/{}".format(i_episode, self.num_episodes), end="")
@@ -87,6 +88,8 @@ class DQNAgent(agents.BaseAgent):
             # One step in the environment
             for time_step in itertools.count():
 
+                total_time_steps += time_step
+
                 # render environment
                 if self.render_env:
                     self.env.render()
@@ -104,7 +107,8 @@ class DQNAgent(agents.BaseAgent):
 
                 # reduce epsilon (because we need less and less exploration)
                 # self.epsilon = self.start_epsilon / (1.0 + i_episode * self.decay_rate)
-                self.epsilon = self.MIN_EPSILON + (self.MAX_EPSILON - self.MIN_EPSILON) * math.exp(-self.decay_rate * time_step)
+                # self.epsilon *= self.decay_rate
+                self.epsilon = self.MIN_EPSILON + (self.MAX_EPSILON - self.MIN_EPSILON) * math.exp(-self.decay_rate * total_time_steps)
 
                 # Update statistics
                 self._update_statistics(R, time_step, i_episode)
