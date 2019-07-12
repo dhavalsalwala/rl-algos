@@ -5,9 +5,6 @@ import time
 
 import numpy as np
 import tensorflow.python.util.deprecation as deprecation
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.optimizers import RMSprop
 
 import agents
 from lib.utils.function_estimator import ANN
@@ -28,13 +25,6 @@ class DQNAgent(agents.BaseAgent):
         self.MAX_EPSILON = 1
         self.MIN_EPSILON = 0.01
         self.epsilon = self.MAX_EPSILON
-
-    def dqnetwork(self):
-        model = Sequential()
-        model.add(Dense(64, input_dim=self.nS, activation='relu'))
-        model.add(Dense(self.nA, activation='linear'))
-        model.compile(loss='mse', osptimizer=RMSprop(self.learning_rate))
-        return model
 
     def _replay(self):
         self._learn()
