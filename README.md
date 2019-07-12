@@ -1,13 +1,13 @@
 ### Overview
 
-This repository provides code, exercises and solutions for popular Reinforcement Learning algorithms. These are meant to serve as a learning tool to complement the theoretical materials from
+This repository provides solutions to the most popular Reinforcement Learning algorithms. These are meant to serve as a learning tool to complement the theoretical materials from
 
 - [Reinforcement Learning: An Introduction (2nd Edition)](http://incompleteideas.net/book/RLbook2018.pdf)
 - [David Silver's Reinforcement Learning Course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
 
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
-### Reinforcement Techniques:
+### Reinforcement Techniques
 
 - Dynamic Programming
   - [Policy and Value Iteration- Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/dynamic_programming/Run_FrozenLake.py)
@@ -30,6 +30,14 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 Textbooks:
 
 - [Reinforcement Learning: An Introduction (2nd Edition)](http://incompleteideas.net/book/RLbook2018.pdf)
+
+Youtube Lecture Series:
+
+- [Introduction to Reinforcement Learning by David Silver](https://www.youtube.com/watch?v=2pWv7GOvuf0&list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ)
+
+MOOC:
+
+- [School of AI's Free Course - Move37](https://www.theschool.ai/courses/move-37-course/)
 
 Classes:
 
