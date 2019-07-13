@@ -22,8 +22,9 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
     - [Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_FrozenLake.py)
     - [Mountain Car](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_MountainCar.py)
     - [Taxi Ride](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/qlearning/Run_TaxiRide.py)
-  - Deep Q Network
+  - Deep Q Network (Fixed Q values and Double DQN)
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/dqn/Run_CartPole.py)
+    - [Lunar Lander](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/dqn/Run_LunarLander.py)
 
 ### References
 
