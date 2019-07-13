@@ -1,3 +1,5 @@
+import sys
+
 import gym
 import numpy as np
 
@@ -15,7 +17,10 @@ def play_episode(environment, nn, episodes):
         state = environment.reset()
         terminated = False
         while not terminated:
+
             # environment.render()
+            print("\rPlaying Episode {}/{}".format(episode, episodes), end="")
+            sys.stdout.flush()
 
             # Select best action to perform in a current state
             action = np.argmax(nn.predict(state))
@@ -59,7 +64,7 @@ stats = plotting.EpisodeStats(
 
 nn = ANN(4, 2, 0.00025)
 nn.set_weights(weights)
-play_episode(env, nn, 100)
+play_episode(env, nn, 1000)
 
 env.close()
 
