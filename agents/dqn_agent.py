@@ -96,7 +96,8 @@ class DQNAgent(agents.BaseAgent):
         all_states = np.array([exp[0] for exp in minibatch])
         q = self.nn.predict(all_states)
         all_next_states = np.array([(np.zeros(self.nS) if exp[4] is True else exp[3]) for exp in minibatch])
-        next_q = self.nn_target.predict(all_next_states)
+        next_q = self.nn.predict(all_next_states)
+        target_next_q = self.nn_target.predict(all_next_states)
 
         i = 0
         x_train = np.zeros((len(minibatch), self.nS))
@@ -106,7 +107,7 @@ class DQNAgent(agents.BaseAgent):
             if done:
                 target_q[action] = reward
             else:
-                target_q[action] = reward + self.discount_factor * np.amax(next_q[i])
+                target_q[action] = reward + self.discount_factor * target_next_q[i][np.argmax(next_q[i])]
 
             x_train[i] = state
             y_train[i] = target_q

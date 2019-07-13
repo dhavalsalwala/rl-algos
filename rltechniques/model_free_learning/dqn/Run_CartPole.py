@@ -17,9 +17,8 @@ def play_episode(environment, nn, episodes):
         state = environment.reset()
         terminated = False
         while not terminated:
-
-            # environment.render()
-            print("\rPlaying Episode {}/{}".format(episode, episodes), end="")
+            environment.render()
+            print("\rPlaying Episode {}/{}".format(episode + 1, episodes), end="")
             sys.stdout.flush()
 
             # Select best action to perform in a current state
@@ -54,7 +53,7 @@ agent = DQNAgent(env_name, env, 5000, learning_rate=0.00025, start_epsilon=1.0, 
 # agent.memory = random_agent.memory
 # agent.train()
 
-weights, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_1000 (1).npy")
+weights, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_3000.npy")
 stats = plotting.EpisodeStats(
     episode_lengths=episode_len,
     episode_rewards=rewards)
@@ -64,7 +63,7 @@ stats = plotting.EpisodeStats(
 
 nn = ANN(4, 2, 0.00025)
 nn.set_weights(weights)
-play_episode(env, nn, 1000)
+play_episode(env, nn, 1)
 
 env.close()
 
