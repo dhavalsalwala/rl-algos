@@ -14,3 +14,6 @@ class Memory:
     def sample(self, batch_size):
         n = min(batch_size, len(self.buffer))
         return random.sample(self.buffer, n)
+
+    def size(self):
+        return len(self.buffer)

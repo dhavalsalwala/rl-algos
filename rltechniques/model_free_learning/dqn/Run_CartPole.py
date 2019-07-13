@@ -1,8 +1,9 @@
 import gym
 import numpy as np
 
-from agents.dqn_agent import DQNAgent
+from agents.dqn_agent import DQNAgent, RandomDQNAgent
 from lib import plotting
+from lib.utils.function_estimator import ANN
 
 
 def play_episode(environment, nn, episodes):
@@ -16,10 +17,8 @@ def play_episode(environment, nn, episodes):
         while not terminated:
             # environment.render()
 
-            state = np.reshape(state, [1, environment.observation_space.shape[0]])
-
             # Select best action to perform in a current state
-            action = np.argmax(nn.predict(state.reshape(1, env.observation_space.shape[0])))
+            action = np.argmax(nn.predict(state))
 
             # Perform an action an observe how environment acted in response
             next_state, reward, terminated, info = environment.step(action)
@@ -41,17 +40,25 @@ def play_episode(environment, nn, episodes):
 # Load a Windy GridWorld environment
 env_name = "CartPole-v0"
 env = gym.make(env_name)
-agent = DQNAgent(env_name, env, 1000, learning_rate=0.00025, start_epsilon=1.0, discount_factor=0.99, decay_rate=0.001,
+
+random_agent = RandomDQNAgent(env_name, env, 1000, is_state_box=True, memory_capacity=100000)
+# random_agent.train()
+
+agent = DQNAgent(env_name, env, 5000, learning_rate=0.00025, start_epsilon=1.0, discount_factor=0.99, decay_rate=0.0001,
                  make_checkpoint=True, is_state_box=True, batch_size=64, memory_capacity=100000)
-agent.train()
-# nn, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_1000.npy")
-# stats = plotting.EpisodeStats(
-#    episode_lengths=episode_len,
-#    episode_rewards=rewards)
+# agent.memory = random_agent.memory
+# agent.train()
+
+weights, rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_1000 (1).npy")
+stats = plotting.EpisodeStats(
+    episode_lengths=episode_len,
+    episode_rewards=rewards)
 
 # Search for a Q values
-nn, stats = agent.nn, agent.stats
+# nn, stats = agent.nn, agent.stats
 
+nn = ANN(4, 2, 0.00025)
+nn.set_weights(weights)
 play_episode(env, nn, 100)
 
 env.close()

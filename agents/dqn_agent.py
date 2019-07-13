@@ -9,9 +9,70 @@ import tensorflow.python.util.deprecation as deprecation
 import agents
 from lib.utils.function_estimator import ANN
 from lib.utils.persistent_solution import Memory
-from lib.utils.rl_policy import make_deep_epsilon_greedy_policy
+from lib.utils.rl_policy import make_deep_epsilon_greedy_policy, make_random_policy
 
 deprecation._PRINT_DEPRECATION_WARNINGS = False
+
+
+class RandomDQNAgent(agents.BaseAgent):
+
+    def __init__(self, env_name, env, pretrain_memory, **kwargs):
+        super(RandomDQNAgent, self).__init__(env_name, env, 0, **kwargs)
+        self.memory = Memory(self.memory_capacity)
+        self.policy = make_random_policy(env)
+        self.pretrain_memory = pretrain_memory
+
+    def _replay(self):
+        self._learn()
+
+    def _learn(self):
+        pass
+
+    def _get_action(self, state):
+        return self.policy()
+
+    def train(self):
+        super(RandomDQNAgent, self).train("Random DQN", 1.0)
+        i_episode = 1
+        break_flag = False
+        while True:
+
+            print("\rRunning Episode {}".format(i_episode), end="")
+            sys.stdout.flush()
+
+            # Reset the environment and pick the first action
+            state = self.env.reset()
+            action = self._get_action(state)
+
+            # One step in the environment
+            for _ in itertools.count():
+
+                # Take a next step and next action
+                next_state, R, done, info = self.env.step(action)
+                next_action = self._get_action(next_state)
+
+                # Remember experience
+                self.memory.add((state, action, R, next_state, done))
+
+                if self.memory.size() == self.pretrain_memory:
+                    break_flag = True
+                    break
+
+                # Replay and train memories
+                self._replay()
+
+                if done:
+                    break
+
+                action = next_action
+                state = next_state
+
+            if break_flag:
+                break
+
+            i_episode += 1
+
+        self.exit(None, "DQN agents pre-trained successfully on random actions.")
 
 
 class DQNAgent(agents.BaseAgent):
@@ -58,7 +119,7 @@ class DQNAgent(agents.BaseAgent):
 
     def train(self):
         super(DQNAgent, self).train("DQN", 2.0)
-        total_time_steps = 1
+        decay_step = 0
         for i_episode in range(self.num_episodes):
 
             print("\rRunning Episode {}/{}".format(i_episode, self.num_episodes), end="")
@@ -69,7 +130,7 @@ class DQNAgent(agents.BaseAgent):
 
             # make checkpoint
             if self.make_checkpoint:
-                self.save(self.nn, i_episode)
+                self.save(self.nn.get_weights(), i_episode)
 
             # Reset the environment and pick the first action
             state = self.env.reset()
@@ -78,7 +139,7 @@ class DQNAgent(agents.BaseAgent):
             # One step in the environment
             for time_step in itertools.count():
 
-                total_time_steps += time_step
+                decay_step += 1
 
                 # render environment
                 if self.render_env:
@@ -98,7 +159,7 @@ class DQNAgent(agents.BaseAgent):
                 # reduce epsilon (because we need less and less exploration)
                 # self.epsilon = self.start_epsilon / (1.0 + i_episode * self.decay_rate)
                 # self.epsilon *= self.decay_rate
-                self.epsilon = self.MIN_EPSILON + (self.MAX_EPSILON - self.MIN_EPSILON) * math.exp(-self.decay_rate * total_time_steps)
+                self.epsilon = self.MIN_EPSILON + (self.MAX_EPSILON - self.MIN_EPSILON) * math.exp(-self.decay_rate * decay_step)
 
                 # Update statistics
                 self._update_statistics(R, time_step, i_episode)
@@ -112,7 +173,7 @@ class DQNAgent(agents.BaseAgent):
                 state = next_state
 
         if self.make_checkpoint:
-            self.save(self.nn, self.num_episodes, force_save=True)
+            self.save(self.nn.get_weights(), self.num_episodes, force_save=True)
 
         self.exit(self.nn, "DQN agents trained successfully and are available at agent.nn. "
                            "All evaluation statistics are available at agent.stats")

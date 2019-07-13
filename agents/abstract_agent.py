@@ -95,5 +95,6 @@ class BaseAgent:
         print("Training Completed.\n--------------------------------")
         print("Total Time: " + str(time.time() - self.start_time) + " seconds.")
         print(message + "\n")
-        print("\nQ Table\n--------------------------------")
-        print(data)
+        if data is not None:
+            print("\nQ Table\n--------------------------------")
+            print(data)
