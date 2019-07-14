@@ -45,12 +45,10 @@ def play_episode(environment, nn, episodes):
 
 # Load a Windy GridWorld environment
 with tf.Session() as session:
-    session.run(tf.global_variables_initializer())
-
     train = False
     env_name = "CartPole-v0"
     env = gym.make(env_name)
-    # env.seed(1)
+    env.seed(1)
     agent = REINFORCEAgent(env_name, env, 300, session, learning_rate=0.01, discount_factor=0.95, make_checkpoint=True,
                            is_state_box=True, batch_size=64)
 
@@ -60,8 +58,8 @@ with tf.Session() as session:
         nn = agent.policy_nn
     else:
         nn = agent.policy_nn
-        nn.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_model_1000.ckpt")
-        rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_stats_1000.npy")
+        nn.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/model/CartPole-v0_model_3000.ckpt")
+        rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_stats_3000.npy")
         stats = plotting.EpisodeStats(
             episode_lengths=episode_len,
             episode_rewards=rewards)
