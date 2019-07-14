@@ -80,21 +80,24 @@ class BaseAgent:
         self.stats.episode_rewards[i_episode] += R
         self.stats.episode_lengths[i_episode] = time_step
 
-    def save(self, data, i_episode, force_save=False):
+    def save(self, i_episode, data=None, force_save=False, is_tensor=False):
         num = math.ceil(self.num_episodes * 0.2)
-        if force_save or (i_episode % num == 0 and i_episode != 0):
+        if (force_save or (i_episode % num == 0 and i_episode != 0)) and not is_tensor:
             file_path = os.path.join(self.dir_location, self.env_name + '_' + str(i_episode) + '.npy')
-            np.save(file_path, (data, self.stats.episode_rewards, self.stats.episode_lengths))
+            np.save(file_path, (data if data is not None else self.nn.get_weights(), self.stats.episode_rewards, self.stats.episode_lengths))
+            print("\nSaved checkpoint to: ", file_path, "\n")
+        elif (force_save or (i_episode % num == 0 and i_episode != 0)) and is_tensor:
+            file_path = os.path.join(self.dir_location + '/model', self.env_name + '_model_' + str(i_episode) + '.ckpt')
+            file_path_stats = os.path.join(self.dir_location, self.env_name + '_stats_' + str(i_episode) + '.npy')
+            self.policy_nn.save(file_path)
+            np.save(file_path_stats, (self.stats.episode_rewards, self.stats.episode_lengths))
             print("\nSaved checkpoint to: ", file_path, "\n")
 
     @staticmethod
     def load(file):
         return np.load(file)
 
-    def exit(self, data, message):
+    def exit(self, message):
         print("Training Completed.\n--------------------------------")
         print("Total Time: " + str(time.time() - self.start_time) + " seconds.")
         print(message + "\n")
-        if data is not None:
-            print("\nQ Table\n--------------------------------")
-            print(data)
