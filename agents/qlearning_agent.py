@@ -52,7 +52,7 @@ class QLearningAgent(agents.BaseAgent):
 
             # make checkpoint
             if self.make_checkpoint:
-                self.save(self.q_table, i_episode)
+                self.save(i_episode, data=self.q_table)
 
             # Reset the environment and pick the first action
             state = self.env.reset()
@@ -83,7 +83,7 @@ class QLearningAgent(agents.BaseAgent):
                 state = next_state
 
         if self.make_checkpoint:
-            self.save(self.q_table, self.num_episodes, force_save=True)
+            self.save(self.num_episodes, data=self.q_table, force_save=True)
 
-        self.exit(self.q_table, "Q values published successfully at agent.q_table. "
+        self.exit("Q values published successfully at agent.q_table. "
                   "All evaluation statistics are available at agent.stats")

@@ -107,7 +107,7 @@ class DQNAgent(agents.BaseAgent):
             if done:
                 target_q[action] = reward
             else:
-                target_q[action] = reward + self.discount_factor * target_next_q[i][np.argmax(next_q[i])]
+                target_q[action] = reward + self.discount_factor * target_next_q[i][np.argmax(next_q[i])]  # Double DQN
 
             x_train[i] = state
             y_train[i] = target_q
@@ -131,7 +131,7 @@ class DQNAgent(agents.BaseAgent):
 
             # make checkpoint
             if self.make_checkpoint:
-                self.save(self.nn.get_weights(), i_episode)
+                self.save(i_episode)
 
             # Reset the environment and pick the first action
             state = self.env.reset()
@@ -174,7 +174,7 @@ class DQNAgent(agents.BaseAgent):
                 state = next_state
 
         if self.make_checkpoint:
-            self.save(self.nn.get_weights(), self.num_episodes, force_save=True)
+            self.save(self.num_episodes, force_save=True)
 
-        self.exit(self.nn.get_weights(), "DQN agents trained successfully and are available at agent.nn. "
-                                         "All evaluation statistics are available at agent.stats")
+        self.exit("DQN agents trained successfully and are available at agent.nn. "
+                  "All evaluation statistics are available at agent.stats")
