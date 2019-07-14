@@ -1,5 +1,6 @@
 import numpy as np
-from lib.utils.OneStepLookahead import one_step_lookahead
+
+from utils.OneStepLookahead import one_step_lookahead
 
 
 def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations=1e9):

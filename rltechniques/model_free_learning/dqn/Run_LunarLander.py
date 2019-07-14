@@ -5,7 +5,7 @@ import numpy as np
 
 from agents.dqn_agent import DQNAgent, RandomDQNAgent
 from lib import plotting
-from lib.utils.function_estimator import ANN
+from utils import ANN
 
 
 def play_episode(environment, nn, episodes):
