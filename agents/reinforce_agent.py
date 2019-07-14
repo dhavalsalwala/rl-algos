@@ -7,9 +7,9 @@ import tensorflow as tf
 import tensorflow.python.util.deprecation as deprecation
 
 import agents
-from utils import PGMemory
-from utils import PolicyEstimator, ValueEstimator
-from utils import make_stochastic_policy
+from utils.estimator import PolicyEstimator, ValueEstimator
+from utils.persistent import PGMemory
+from utils.rl_policy import make_stochastic_policy
 
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 

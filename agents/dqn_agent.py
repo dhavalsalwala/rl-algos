@@ -7,9 +7,9 @@ import numpy as np
 import tensorflow.python.util.deprecation as deprecation
 
 import agents
-from utils import ANN
-from utils import Memory
-from utils import make_deep_epsilon_greedy_policy, make_random_policy
+from utils.estimator import ANN
+from utils.persistent import Memory
+from utils.rl_policy import make_deep_epsilon_greedy_policy, make_random_policy
 
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
