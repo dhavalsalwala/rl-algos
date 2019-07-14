@@ -26,8 +26,8 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/dqn/Run_CartPole.py)
     - [Lunar Lander](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/model_free_learning/dqn/Run_LunarLander.py)
 - Policy Gradient
-    - Monte Carlo Policy Gradient (REINFORCE)
-      -[Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/policy_gradient/Run_CartPole.py)
+  - Monte Carlo Policy Gradient (REINFORCE)
+    - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/policy_gradient/Run_CartPole.py)
 ### References
 
 Textbooks:
