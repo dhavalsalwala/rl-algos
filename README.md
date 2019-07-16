@@ -58,4 +58,4 @@ GitHub: https://github.com/colinskow/move37
 
 ### Contact
 
-- If you have a suggestion or you came across any bug/issue, shoot a mail to me at mailto:dhavalsalwala@gmail.com
+- If you have a suggestion or you came across any bug/issue, shoot a mail at mailto:dhavalsalwala@gmail.com
