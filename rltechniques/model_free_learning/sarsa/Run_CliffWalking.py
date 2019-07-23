@@ -1,9 +1,9 @@
 import sys
 import time
-from lib import plotting
+from modules.lib import plotting
 import numpy as np
-from lib.envs.cliff_walking import CliffWalkingEnv
-from agents.model_free_agents.sarsa_agent_bkp import SARSAAgent
+from modules.lib.envs.cliff_walking import CliffWalkingEnv
+from agents.sarsa_agent import SARSAAgent
 
 
 def play_episode(env, Q):

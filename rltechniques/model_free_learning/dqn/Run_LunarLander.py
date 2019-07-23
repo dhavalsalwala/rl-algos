@@ -4,8 +4,8 @@ import gym
 import numpy as np
 
 from agents.dqn_agent import DQNAgent, RandomDQNAgent
-from lib import plotting
-from utils import ANN
+from modules.lib import plotting
+from utils.estimator import ANN
 
 
 def play_episode(environment, nn, episodes):

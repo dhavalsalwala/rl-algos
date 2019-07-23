@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-from lib import plotting
+from modules.lib import plotting
 
 
 class BaseAgent:

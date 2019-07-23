@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-from lib import plotting
+from modules.lib import plotting
 from agents.sarsa_agent import SARSAAgent
 import matplotlib
 

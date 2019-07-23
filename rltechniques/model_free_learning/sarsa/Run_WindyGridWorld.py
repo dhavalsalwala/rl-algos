@@ -1,8 +1,8 @@
 import sys
 import time
-from lib import plotting
+from modules.lib import plotting
 import numpy as np
-from lib.envs.windy_gridworld import WindyGridworldEnv
+from modules.lib.envs.windy_gridworld import WindyGridworldEnv
 from agents.sarsa_agent import SARSAAgent
 
 

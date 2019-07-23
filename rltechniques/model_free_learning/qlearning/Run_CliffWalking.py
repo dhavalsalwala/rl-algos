@@ -4,8 +4,8 @@ import time
 import numpy as np
 
 from agents.qlearning_agent import QLearningAgent
-from lib import plotting
-from lib.envs.cliff_walking import CliffWalkingEnv
+from modules.lib import plotting
+from modules.lib.envs.cliff_walking import CliffWalkingEnv
 
 
 def play_episode(env, Q):

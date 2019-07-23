@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 from agents.a2c_agent import A2CAgent
-from lib import plotting
+from modules.lib import plotting
 
 
 def play_episode(environment, nn, episodes):

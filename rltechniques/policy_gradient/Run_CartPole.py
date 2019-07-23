@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 from agents.reinforce_agent import REINFORCEAgent
-from lib import plotting
+from modules.lib import plotting
 
 
 def play_episode(environment, nn, episodes):

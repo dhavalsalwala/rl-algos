@@ -1,8 +1,8 @@
 import sys
 import time
-from lib import plotting
+from modules.lib import plotting
 import numpy as np
-from lib.envs.grid_world import GridworldEnv
+from modules.lib.envs.grid_world import GridworldEnv
 from agents.sarsa_agent import SARSAAgent
 
 
