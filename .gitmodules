@@ -1,0 +1,3 @@
+[submodule "modules/MADRL"]
+	path = modules/MADRL
+	url = git@github.com:dhavalsalwala/MADRL.git
