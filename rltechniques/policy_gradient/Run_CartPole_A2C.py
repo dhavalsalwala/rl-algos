@@ -4,7 +4,7 @@ import gym
 import numpy as np
 import tensorflow as tf
 
-from agents.reinforce_agent import REINFORCEAgent
+from agents.a2c_agent import A2CAgent
 from lib import plotting
 
 
@@ -17,9 +17,9 @@ def play_episode(environment, nn, episodes):
         state = environment.reset()
         terminated = False
         while not terminated:
-            environment.render()
-            print("\rPlaying Episode {}/{}".format(episode + 1, episodes), end="")
-            sys.stdout.flush()
+            # environment.render()
+            # print("\rPlaying Episode {}/{}".format(episode + 1, episodes), end="")
+            # sys.stdout.flush()
 
             # Select best action to perform in a current state
             state = state.reshape(1, len(state))
@@ -44,25 +44,27 @@ def play_episode(environment, nn, episodes):
 
 
 # Load a Windy GridWorld environment
+
+tf.reset_default_graph()
 with tf.Session() as session:
-    train = True
+    train = False
     env_name = "CartPole-v0"
     env = gym.make(env_name)
-    agent = REINFORCEAgent(env_name, env, 300, session, learning_rate=0.01, discount_factor=0.95, make_checkpoint=True,
-                           is_state_box=True, batch_size=64)
+    agent = A2CAgent(env_name, env, 1000, session, learning_rate=0.001, discount_factor=0.95, make_checkpoint=True,
+                     is_state_box=True, batch_size=64)
 
     if train:
         agent.train()
         stats = agent.stats
-        nn = agent.policy_nn
+        nn = agent.actor_nn
     else:
-        nn = agent.policy_nn
-        nn.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/model/CartPole-v0_model_3000.ckpt")
-        rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_stats_3000.npy")
+        nn = agent.actor_nn
+        nn.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/model/CartPole-v0_model_1000.ckpt")
+        rewards, episode_len = agent.load("/home/dsalwala/NUIG/Thesis/rl-algos/data/CartPole-v0_stats_1000.npy")
         stats = plotting.EpisodeStats(
             episode_lengths=episode_len,
             episode_rewards=rewards)
 
-    play_episode(env, nn, 1)
+    play_episode(env, nn, 100)
     env.close()
     plotting.plot_episode_stats(stats)

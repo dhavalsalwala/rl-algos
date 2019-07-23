@@ -44,7 +44,7 @@ class BaseAgent:
         if self.is_state_box:
             self.nS = self.env.observation_space.shape[0]
         else:
-            self.nS = self.env.observation_space.n
+            self.nS = 1
 
     def _learn(self):
         raise NotImplementedError
@@ -80,7 +80,7 @@ class BaseAgent:
         self.stats.episode_rewards[i_episode] += R
         self.stats.episode_lengths[i_episode] = time_step
 
-    def save(self, i_episode, data=None, force_save=False, is_tensor=False):
+    def save(self, i_episode, data=None, force_save=False, is_tensor=False, is_a2c=False):
         num = math.ceil(self.num_episodes * 0.2)
         if (force_save or (i_episode % num == 0 and i_episode != 0)) and not is_tensor:
             file_path = os.path.join(self.dir_location, self.env_name + '_' + str(i_episode) + '.npy')
@@ -89,7 +89,10 @@ class BaseAgent:
         elif (force_save or (i_episode % num == 0 and i_episode != 0)) and is_tensor:
             file_path = os.path.join(self.dir_location + '/model', self.env_name + '_model_' + str(i_episode) + '.ckpt')
             file_path_stats = os.path.join(self.dir_location, self.env_name + '_stats_' + str(i_episode) + '.npy')
-            self.policy_nn.save(file_path)
+            if is_a2c:
+                self.actor_nn.save(file_path)
+            else:
+                self.policy_nn.save(file_path)
             np.save(file_path_stats, (self.stats.episode_rewards, self.stats.episode_lengths))
             print("\nSaved checkpoint to: ", file_path, "\n")
 

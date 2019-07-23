@@ -24,7 +24,7 @@ class REINFORCEAgent(agents.BaseAgent):
         self.policy = make_stochastic_policy(self.nA)
         self.session = session
 
-    def discount_and_normalize_rewards(self, episode_rewards):
+    def get_total_discounted_rewards(self, episode_rewards):
         discounted_episode_rewards = np.zeros_like(episode_rewards)
         cumulative = 0.0
         for i in reversed(range(len(episode_rewards))):
@@ -33,13 +33,15 @@ class REINFORCEAgent(agents.BaseAgent):
 
         mean = np.mean(discounted_episode_rewards)
         std = np.std(discounted_episode_rewards)
+
+        # Standardisation
         discounted_episode_rewards = (discounted_episode_rewards - mean) / std
 
         return discounted_episode_rewards
 
     def _learn(self):
         episode_length = len(self.memory.buffer)
-        total_return = self.discount_and_normalize_rewards(np.array([t.reward for i, t in enumerate(self.memory.buffer[:])]))
+        total_return = self.get_total_discounted_rewards(np.array([t.reward for i, t in enumerate(self.memory.buffer[:])]))
 
         x_train_value = np.zeros((episode_length, self.nS))
         y_train_value = np.zeros(episode_length)
@@ -63,7 +65,7 @@ class REINFORCEAgent(agents.BaseAgent):
         # Update our value estimator
         # self.value_nn.train(x_train_value, y_train_value)
         # Update our policy estimator
-        self.policy_nn.train(episode_states, episode_actions, total_return)
+        self.policy_nn.train([episode_states, episode_actions, total_return])
 
         self.memory.clear()
 

@@ -1,5 +1,6 @@
 import tensorflow as tf
-from keras.initializers import Zeros
+from keras import backend as K
+from keras import optimizers
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers import RMSprop, Adam
@@ -83,8 +84,10 @@ class PolicyEstimator:
         sess = self.session or tf.get_default_session()
         return sess.run(self.action_probs, {self.state: state})
 
-    def train(self, episode_states, episode_actions, discounted_total_rewards):
-        loss_, _ = self.session.run([self.loss, self.train_opt], feed_dict={self.state: episode_states,
+    def train(self, state, episode_actions, discounted_total_rewards):
+        if state.ndim == 1:
+            state = state.reshape(1, len(state))
+        loss_, _ = self.session.run([self.loss, self.train_opt], feed_dict={self.state: state,
                                                                             self.actions: episode_actions,
                                                                             self.discounted_total_rewards: discounted_total_rewards
                                                                             })
@@ -97,42 +100,63 @@ class PolicyEstimator:
         self.saver.restore(self.session, file_path)
 
 
-class PolicyEstimator2:
-    def __init__(self, nS, nA, learning_rate=0.001):
-
-        self.nS = nS
-        self.nA = nA
-        self.learning_rate = learning_rate
-        self.model = self.build()
-
-    def build(self):
-
-        model = Sequential()
-        model.add(Dense(10, input_dim=self.nS, activation='relu'))
-        model.add(Dense(2, input_dim=self.nS, activation='relu'))
-        model.add(Dense(2, input_dim=self.nS))
-        model.add(Dense(self.nA, activation='softmax'))
-        model.compile(loss="categorical_crossentropy", optimizer=Adam(lr=self.learning_rate))
-        return model
-
-    def train(self, x, y, batch_size=64, epochs=1, verbose=0):
-        self.model.fit(x, y, batch_size, epochs=epochs, verbose=verbose)
-
-    def predict(self, state):
-        if state.ndim == 1:
-            return self.predict(state.reshape(1, self.nS)).flatten()
-        else:
-            return self.model.predict(state)
-
-    def set_weights(self, weights):
-        self.model.set_weights(weights)
-
-    def get_weights(self):
-        return self.model.get_weights()
-
-
 class ValueEstimator:
-    def __init__(self, nS, nA, learning_rate=0.001):
+    """
+       Value Function approximator.
+    """
+
+    def __init__(self, nS, nA, session, learning_rate=0.005, scope="value_estimator"):
+        with tf.variable_scope(scope):
+            self.state = tf.placeholder(tf.float32, [None, nS], name="state")
+            self.target = tf.placeholder(tf.float32, name="target")
+            self.session = session
+
+            with tf.name_scope("fc1"):
+                fc1 = tf.contrib.layers.fully_connected(inputs=self.state,
+                                                        num_outputs=24,
+                                                        activation_fn=tf.nn.relu,
+                                                        weights_initializer=tf.contrib.layers.xavier_initializer())
+
+            with tf.name_scope("fc2"):
+                self.fc2 = tf.contrib.layers.fully_connected(inputs=fc1,
+                                                             num_outputs=1,
+                                                             activation_fn=tf.keras.activations.linear,
+                                                             weights_initializer=tf.contrib.layers.xavier_initializer())
+
+            with tf.name_scope("loss"):
+                self.value_estimate = tf.squeeze(self.fc2)
+                self.loss = tf.squared_difference(self.value_estimate, self.target)
+
+            with tf.name_scope("train"):
+                self.train_opt = tf.train.AdamOptimizer(learning_rate).minimize(self.loss,
+                                                                                global_step=tf.contrib.framework.get_global_step())
+                self.saver = tf.train.Saver()
+
+    def predict(self, state):
+        if state.ndim == 1:
+            state = state.reshape(1, len(state))
+        sess = self.session or tf.get_default_session()
+        return sess.run(self.value_estimate, {self.state: state})
+
+    def train(self, state, target):
+        if state.ndim == 1:
+            state = state.reshape(1, len(state))
+        loss_, _ = self.session.run([self.loss, self.train_opt], feed_dict={self.state: state, self.target: target})
+        return loss_
+
+    def save(self, file_path):
+        self.saver.save(self.session, file_path)
+
+    def load(self, file_path):
+        self.saver.restore(self.session, file_path)
+
+
+class ValueEstimator2:
+    """
+       Value Function approximator.
+    """
+
+    def __init__(self, nS, nA, learning_rate=0.005):
 
         self.nS = nS
         self.nA = nA
@@ -142,9 +166,10 @@ class ValueEstimator:
     def build(self):
 
         model = Sequential()
-        model.add(Dense(64, input_dim=self.nS, kernel_initializer=Zeros()))
-        model.add(Dense(1, activation='linear', kernel_initializer=Zeros()))
-        model.compile(loss="mse", optimizer=RMSprop(lr=self.learning_rate))
+        model.add(Dense(24, input_dim=self.nS, kernel_initializer='he_uniform'))
+        model.add(Dense(1, activation='linear', kernel_initializer='he_uniform'))
+        model.compile(loss="mse", optimizer=Adam(lr=0.1))
+
         return model
 
     def train(self, x, y, batch_size=64, epochs=1, verbose=0):
@@ -152,9 +177,8 @@ class ValueEstimator:
 
     def predict(self, state):
         if state.ndim == 1:
-            return self.predict(state.reshape(1, self.nS)).flatten()
-        else:
-            return self.model.predict(state)
+            state = state.reshape(1, len(state))
+        return self.model.predict(state)
 
     def set_weights(self, weights):
         self.model.set_weights(weights)
