@@ -64,7 +64,7 @@ GitHub Resources:
 
 - I highly recommend School of AI's Free Course [Move37](https://www.theschool.ai/courses/move-37-course/)
 GitHub: https://github.com/colinskow/move37
-- [Repo containing code for multi-agent deep reinforcement learning (MADRL).](https://github.com/sisl/MADRL) - by Stanford Intelligent Systems Laboratory
+- [Multi-agent deep reinforcement learning Library (MADRL).](https://github.com/sisl/MADRL) - by Stanford Intelligent Systems Laboratory
 - [Custom Environments based on OpenAI gym](https://github.com/dennybritz/reinforcement-learning/tree/master/lib) - by Denny Britz
 
 ### Contact
