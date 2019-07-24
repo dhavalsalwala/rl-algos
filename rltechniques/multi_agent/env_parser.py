@@ -52,7 +52,7 @@ class ENVParser(object):
         self.update_argument_parser(parser, self.DEFAULT_POLICY_OPTS)
 
         parser.add_argument(
-            '--algo', type=str, default='dqn',
+            '--algo', type=str, default='',
             help='Add tf or th to the algo name to run tensorflow or theano version')
 
         parser.add_argument('--max_path_length', type=int, default=200)
@@ -74,12 +74,12 @@ class ENVParser(object):
         parser.add_argument('--feature_hidden', type=comma_sep_ints, default='128,64,32')
         parser.add_argument('--policy_hidden', type=comma_sep_ints, default='32')
 
-        parser.add_argument('--conv', type=str, default='False')
+        parser.add_argument('--conv', type=bool, default=False)
         parser.add_argument('--conv_filters', type=comma_sep_ints, default='3,3')
         parser.add_argument('--conv_channels', type=comma_sep_ints, default='4,8')
         parser.add_argument('--conv_strides', type=comma_sep_ints, default='1,1')
         parser.add_argument('--conv_pads', type=str, default='SAME')
-        parser.add_argument('--batch_normalization', type=bool, default=True)
+        parser.add_argument('--batch_normalization', type=bool, default=False)
 
         parser.add_argument('--min_std', type=float, default=1e-6)
         parser.add_argument('--exp_strategy', type=str, default='ou')
@@ -109,4 +109,4 @@ class ENVParser(object):
 
         self.update_argument_parser(parser, env_options, **kwargs)
         self.args = parser.parse_known_args(
-            [arg for arg in sys.argv[2:] if arg not in ('-h', '--help')])[0]
+            [arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])[0]
