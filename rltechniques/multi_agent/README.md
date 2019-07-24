@@ -23,4 +23,9 @@ This is the multi-agent section of the Reinforcement Learning repository availab
   - REINFORCE
   
         python3 rltechniques/multi_agent/policy_gradient/run_pursuit.py --algo=vpg --control decentralized --policy_hidden 100,50,25 --n_iter 1000 --batch_size 1000
+        
+### References
+
+  - K. Gupta, Jayesh & Egorov, Maxim & Kochenderfer, Mykel. (2017). Cooperative Multi-agent Control Using Deep Reinforcement Learning. 66-83. 10.1007/978-3-319-71682-4_5. 
+  - Lowe, Ryan & Wu, Yi & Tamar, Aviv & Harb, Jean & Abbeel, Pieter & Mordatch, Igor. (2017). Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments. 
 
