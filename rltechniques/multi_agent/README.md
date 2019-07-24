@@ -7,6 +7,9 @@ This is the multi-agent section of the Reinforcement Learning repository availab
   - Pursuit Evasion
  
 <img src="resources/pursuit_evasion.png" height=200 width=200>
+
+  - Explanation
+    - Pursuit is a standard task for benchmarking multi-agent algorithms. The pursuit-evasion domain consists of two sets of agents: evaders and pursuers. The evaders are trying to avoid pursuers, while the pursuers are trying to catch the evaders. The action and observation spaces in this problem are discrete. The agents interact on a two-dimensional grid, and an evader is considered caught if it is surrounded by pursuers on four sides. In order to catch the evaders, the pursuers must learn to cooperate by trapping the evaders on all sides. When the pursuers catch an evader, they receive a reward. The evaders follow a uniform random policy. The domain contains obstacles through which the agents cannot pass. Each pursuer receives a range-limited observation of its surroundings, and must choose between five actions Stay, Go East, Go West, Go South, Go North. The observations contain information about the agent’s surroundings, including the location of nearby pursuers, evaders, and obstacles.
   
 ### Setup
   - Add directories to PYTHONPATH
