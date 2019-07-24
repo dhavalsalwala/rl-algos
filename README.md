@@ -11,8 +11,8 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
   #### Multi Agent RL
   
-  ##### Guide
-    - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
+    - Guide
+      - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
   
   - Multi Agent Deep Q Network
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent/dqn/run_pursuit.py)
@@ -38,6 +38,7 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 - Policy Gradient
   - Monte Carlo Policy Gradient (REINFORCE)
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/policy_gradient/Run_CartPole.py)
+
 ### References
 
 Textbooks:
@@ -65,6 +66,8 @@ GitHub Resources:
 
 - I highly recommend School of AI's Free Course [Move37](https://www.theschool.ai/courses/move-37-course/)
 GitHub: https://github.com/colinskow/move37
+
+- [Repo containing code for multi-agent deep reinforcement learning (MADRL).](https://github.com/sisl/MADRL)
 
 ### Contact
 
