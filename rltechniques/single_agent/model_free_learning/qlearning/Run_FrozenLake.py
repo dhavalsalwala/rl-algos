@@ -53,7 +53,7 @@ n_episodes = 1000
 iteration_name = "QLearning"
 wins, total_reward, average_reward = play_episodes(env, n_episodes, Q)
 
-print(f'{iteration_name} :: number of wins over {n_episodes} episodes = {wins}')
-print(f'{iteration_name} :: average reward over {n_episodes} episodes = {average_reward} \n\n')
+print('{iteration_name} :: number of wins over {n_episodes} episodes = {wins}')
+print('{iteration_name} :: average reward over {n_episodes} episodes = {average_reward} \n\n')
 
 # plotting.plot_episode_stats(stats)

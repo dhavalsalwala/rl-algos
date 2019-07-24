@@ -36,10 +36,10 @@ def play_episode(environment, Q, episodes):
             state = next_state
 
     print()
-    print(f"Results after {episodes} episodes:")
-    print(f"Average reward per episode: {total_reward / episodes}")
-    print(f"Average time steps per episode: {total_epochs / episodes}")
-    print(f"Average penalties per episode: {penalties / episodes}")
+    print("Results after {episodes} episodes:")
+    print("Average reward per episode: {total_reward / episodes}")
+    print("Average time steps per episode: {total_epochs / episodes}")
+    print("Average penalties per episode: {penalties / episodes}")
 
 
 # Load a Windy GridWorld environment
