@@ -1,9 +1,9 @@
 import numpy as np
-from modules.MADRL.madrl_environments.pursuit.utils import TwoDMaps
+from madrl_environments import ObservationBuffer
+from madrl_environments.pursuit import PursuitEvade
+from madrl_environments.pursuit.utils import TwoDMaps
 
-from modules.MADRL.madrl_environments import ObservationBuffer
-from modules.MADRL.madrl_environments.pursuit import PursuitEvade
-from rltechniques.multi_agent import ENVParser
+from rltechniques.multi_agent.env_parser import ENVParser
 from rltechniques.multi_agent.ma_runner import Runner
 
 ENV_OPTIONS = [
