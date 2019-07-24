@@ -9,6 +9,9 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
 ### Reinforcement Techniques
 
+  - Add directories to PYTHONPATH
+    - export PYTHONPATH=$(pwd):$(pwd)/modules/MADRL:$(pwd)/modules/MADRL/rltools:$(pwd)/modules/MADRL/rllab:$PYTHONPATH
+
   #### Multi Agent RL
   
   - Environment info
