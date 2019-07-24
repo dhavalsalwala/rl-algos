@@ -3,8 +3,8 @@ from modules.MADRL.madrl_environments.pursuit.utils import TwoDMaps
 
 from modules.MADRL.madrl_environments import ObservationBuffer
 from modules.MADRL.madrl_environments.pursuit import PursuitEvade
-from multi_agent.env_parser import ENVParser
-from multi_agent.ma_runner import Runner
+from rltechniques.multi_agent import ENVParser
+from rltechniques.multi_agent.ma_runner import Runner
 
 ENV_OPTIONS = [
     ('n_evaders', int, 2, ''),
