@@ -3,7 +3,7 @@ from modules.MADRL.madrl_environments.pursuit.utils import TwoDMaps
 
 from modules.MADRL.madrl_environments import ObservationBuffer
 from modules.MADRL.madrl_environments.pursuit import PursuitEvade
-from multi_agent.runner_parser import RunnerParser
+from multi_agent.env_parser import ENVParser
 from multi_agent.ma_runner import Runner
 
 ENV_OPTIONS = [
@@ -54,4 +54,4 @@ def main(parser):
 
 
 if __name__ == '__main__':
-    main(RunnerParser(ENV_OPTIONS))
+    main(ENVParser(ENV_OPTIONS))

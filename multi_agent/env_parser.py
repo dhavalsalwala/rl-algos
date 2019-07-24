@@ -8,7 +8,7 @@ import ast
 from . import *
 
 
-class RunnerParser(object):
+class ENVParser(object):
 
     DEFAULT_OPTS = [
         ('discount', float, 0.99, ''),
@@ -26,15 +26,7 @@ class RunnerParser(object):
         self._env_options = env_options
         parser = argparse.ArgumentParser(description='Runner')
 
-        parser.add_argument('mode', help='rllab or rltools')
-        args = parser.parse_args(sys.argv[1:2])
-        if not hasattr(self, args.mode):
-            print('Unrecognized command')
-            parser.print_help()
-            exit(1)
-
-        self.mode = args.mode
-        getattr(self, args.mode)(self._env_options, **kwargs)
+        getattr(self, "set_param_values")(self._env_options, **kwargs)
 
     def update_argument_parser(self, parser, options, **kwargs):
         kwargs = kwargs.copy()
@@ -48,7 +40,7 @@ class RunnerParser(object):
         if kwargs:
             raise ValueError("options %s ignored" % kwargs)
 
-    def rllab(self, env_options, **kwargs):
+    def set_param_values(self, env_options, **kwargs):
         now = datetime.datetime.now(dateutil.tz.tzlocal())
         rand_id = str(uuid.uuid4())[:5]
         timestamp = now.strftime('%Y_%m_%d_%H_%M_%S_%f_%Z')
