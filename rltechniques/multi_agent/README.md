@@ -5,8 +5,8 @@ This is the multi-agent section of the Reinforcement Learning repository availab
 ### Environment description
   
   - Pursuit Evasion
-  
-![Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/tree/master/rltechniques/multi_agent/resources/pursuit_evasion.png?raw=true "Title")
+ 
+ <p align="center"><img width="90%" src="https://github.com/dhavalsalwala/rl-algos/tree/master/rltechniques/multi_agent/resources/pursuit_evasion.png"></p>
   
 ### Setup
   - Add directories to PYTHONPATH
