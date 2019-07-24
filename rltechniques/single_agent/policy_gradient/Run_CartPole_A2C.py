@@ -1,5 +1,3 @@
-import sys
-
 import gym
 import numpy as np
 import tensorflow as tf
@@ -38,9 +36,9 @@ def play_episode(environment, nn, episodes):
             state = next_state
 
     print()
-    print(f"Results after {episodes} episodes:")
-    print(f"Average reward per episode: {total_reward / episodes}")
-    print(f"Average time steps per episode: {total_epochs / episodes}")
+    print("Results after {episodes} episodes:")
+    print("Average reward per episode: {total_reward / episodes}")
+    print("Average time steps per episode: {total_epochs / episodes}")
 
 
 # Load a Windy GridWorld environment
