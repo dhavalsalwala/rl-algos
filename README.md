@@ -1,21 +1,21 @@
 ### Overview
 
-This repository provides solutions to the most popular Reinforcement Learning algorithms. These are meant to serve as a learning tool to complement the theoretical materials from
+This repository provides solutions to the most popular Reinforcement Learning algorithms.
 
-- [Reinforcement Learning: An Introduction (2nd Edition)](http://incompleteideas.net/book/RLbook2018.pdf)
-- [David Silver's Reinforcement Learning Course](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
-
-All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
+All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/) and [MADRL](https://github.com/dhavalsalwala/MADRL). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
 ### Reinforcement Techniques
 
+  #### Setup
+  - Create python virtual environment by runnig MADRL/rllab/environment.yml in conda.
+  - Add directories to PYTHONPATH
+            
+        export PYTHONPATH=$(pwd):$(pwd)/modules/MADRL:$(pwd)/modules/MADRL/rltools:$(pwd)/modules/MADRL/rllab:$PYTHONPATH
+
   #### Multi Agent RL
   
-  - Environment info
-    - Pursuit Evasion
-  
   - Multi Agent Deep Q Network
-    - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent/dqn/run_pursuit.py)
+    - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
 
   #### Single Agent RL
 

@@ -5,3 +5,18 @@ This is the multi-agent section of the Reinforcement Learning repository availab
 ### Environment description
   
   - Pursuit Evasion
+  
+### Setup
+  - Add directories to PYTHONPATH
+            
+        export PYTHONPATH=$(pwd):$(pwd)/modules/MADRL:$(pwd)/modules/MADRL/rltools:$(pwd)/modules/MADRL/rllab:$PYTHONPATH
+  
+### RL Algos
+  - DQN
+  
+        python3 rltechniques/multi_agent/dqn/run_pursuit.py --algo=dqn --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
+  
+  - REINFORCE
+  
+        python3 rltechniques/multi_agent/policy_gradient/run_pursuit.py --algo=vpg --control decentralized --policy_hidden 100,50,25 --n_iter 1000 --batch_size 1000
+
