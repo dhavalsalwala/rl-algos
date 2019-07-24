@@ -1,6 +1,3 @@
-<p align="center"><img width="90%" src="https://github.com/dhavalsalwala/rl-algos/tree/master/rltechniques/multi_agent/resources/pursuit_evasion.png"></p>
-
-
 ### Multi-Agent Deep Reinforcment Learning
 
 This is the multi-agent section of the Reinforcement Learning repository available at https://github.com/dhavalsalwala/rl-algos
@@ -9,7 +6,7 @@ This is the multi-agent section of the Reinforcement Learning repository availab
   
   - Pursuit Evasion
  
-<p align="center"><img width="90%" src="https://github.com/dhavalsalwala/rl-algos/tree/master/rltechniques/multi_agent/resources/pursuit_evasion.png"></p>
+<img width="90%" src="https://github.com/dhavalsalwala/rl-algos/tree/master/rltechniques/multi_agent/resources/pursuit_evasion.png">
   
 ### Setup
   - Add directories to PYTHONPATH
