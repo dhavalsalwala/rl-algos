@@ -9,15 +9,15 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
 ### Reinforcement Techniques
 
-  ## Multi Agent RL
+  #### Multi Agent RL
   
-  # Guide
+  ##### Guide
     - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
   
   - Multi Agent Deep Q Network
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent/dqn/run_pursuit.py)
 
-  ## Single Agent RL
+  #### Single Agent RL
 
 - Dynamic Programming
   - [Policy and Value Iteration- Frozen Lake](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/dynamic_programming/Run_FrozenLake.py)
