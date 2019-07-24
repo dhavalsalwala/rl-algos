@@ -16,8 +16,6 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
   
   - Multi Agent Deep Q Network
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent/dqn/run_pursuit.py)
-      - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
-  
 
   #### Single Agent RL
 
@@ -40,6 +38,8 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 - Policy Gradient
   - Monte Carlo Policy Gradient (REINFORCE)
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/policy_gradient/Run_CartPole.py)
+  - Actor Critic Policy Gradient
+    - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/policy_gradient/Run_CartPole_A2C.py)
 
 ### References
 
