@@ -60,16 +60,12 @@ Classes:
 - [David Silver's Reinforcement Learning Course (UCL, 2015)](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html)
 - [CS294 - Deep Reinforcement Learning (Berkeley, Fall 2015)](http://rll.berkeley.edu/deeprlcourse/)
 
-Lib (Custom Environments based on OpenAI gym)
-
-- https://github.com/dennybritz/reinforcement-learning
-
 GitHub Resources:
 
 - I highly recommend School of AI's Free Course [Move37](https://www.theschool.ai/courses/move-37-course/)
 GitHub: https://github.com/colinskow/move37
-
 - [Repo containing code for multi-agent deep reinforcement learning (MADRL).](https://github.com/sisl/MADRL)
+- [Custom Environments based on OpenAI gym](https://github.com/dennybritz/reinforcement-learning/tree/master/lib)
 
 ### Contact
 
