@@ -12,7 +12,7 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
 ### Reinforcement Techniques
 
-  #### Multi Agent RL
+  #### Multi Agent RL  - [Go to Repo](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
   
   - MA Deep Q Network, MA REINFORCE
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
