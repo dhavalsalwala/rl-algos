@@ -11,11 +11,13 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
   #### Multi Agent RL
   
-    - Guide
-      - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
+  - Environment info
+    - Pursuit Evasion
   
   - Multi Agent Deep Q Network
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent/dqn/run_pursuit.py)
+      - run_pursuit.py --control decentralized --policy_hidden 100,50,25 --n_iter 10 --batch_size 32 --replay_pre_trained_size 1000
+  
 
   #### Single Agent RL
 
