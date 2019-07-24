@@ -16,6 +16,9 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
   
   - Multi Agent Deep Q Network
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
+    
+  - Multi Agent REINFORCE
+    - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
 
   #### Single Agent RL
 
