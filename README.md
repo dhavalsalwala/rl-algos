@@ -38,7 +38,7 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 - Policy Gradient
   - Monte Carlo Policy Gradient (REINFORCE)
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/policy_gradient/Run_CartPole.py)
-  - Actor Critic Policy Gradient
+  - Actor Critic Policy Gradient (A2C)
     - [Cart Pole](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/single_agent/policy_gradient/Run_CartPole_A2C.py)
 
 ### References
