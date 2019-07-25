@@ -4,9 +4,11 @@ import datetime
 import sys
 import uuid
 from collections import namedtuple
-import numpy as np
+
 import dateutil
 import dateutil.tz
+import joblib
+import numpy as np
 import runners.archs as archs
 import tensorflow as tf
 from vis import PolicyLoad
@@ -32,7 +34,6 @@ def comma_sep_ints(s):
 
 
 class ENVParser(object):
-
     DEFAULT_OPTS = [
         ('discount', float, 0.99, ''),
         ('gae_lambda', float, 0.99, ''),
@@ -59,7 +60,7 @@ class ENVParser(object):
                 print("warning: already have option %s. skipping" % name)
             else:
                 parser.add_argument(flag, type=typ, default=kwargs.pop(name, default), help=desc or
-                                    " ")
+                                                                                            " ")
         if kwargs:
             raise ValueError("options %s ignored" % kwargs)
 
@@ -121,9 +122,9 @@ class ENVParser(object):
         parser.add_argument('--args_data', type=str, help='Pickled data for stub objects')
         parser.add_argument('--snapshot_mode', type=str, default='all',
                             help='Mode to save the snapshot. Can be either "all" '
-                            '(all iterations will be saved), "last" (only '
-                            'the last iteration will be saved), or "none" '
-                            '(do not save snapshots)')
+                                 '(all iterations will be saved), "last" (only '
+                                 'the last iteration will be saved), or "none" '
+                                 '(do not save snapshots)')
         parser.add_argument(
             '--log_tabular_only', type=ast.literal_eval, default=False,
             help='Whether to only print the tabular log information (in a horizontal format)')
@@ -143,10 +144,6 @@ class Visualizer(PolicyLoad):
     def __call__(self, filename, **kwargs):
         vid = kwargs.pop('vid', None)
         if self.mode == 'rllab':
-            import joblib
-            from rllab.sampler.ma_sampler import cent_rollout
-
-            # XXX
             tf.reset_default_graph()
             with tf.Session() as sess:
 
@@ -154,12 +151,8 @@ class Visualizer(PolicyLoad):
                 policy = data['q_network']
                 if self.control == 'decentralized':
                     act_fns = lambda o: policy.get_actions(o)[0]
-                    if vid:
-                        rew, trajinfo = self.env.wrapped_env.env.animate(act_fn=act_fns,
-                                                                         nsteps=self.max_traj_len,
-                                                                         file_name=vid)
-                    else:
-                        rew, trajinfo = self.env.wrapped_env.env.animate(act_fn=act_fns,
-                                                                         nsteps=self.max_traj_len)
+                    rew, trajinfo = self.env.wrapped_env.env.animate(act_fn=act_fns,
+                                                                     nsteps=self.max_traj_len,
+                                                                     file_name=vid)
                     info = {key: np.sum(value) for key, value in trajinfo.items()}
                 return rew, info
