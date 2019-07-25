@@ -1,13 +1,12 @@
 import os.path as osp
 
 import rllab.misc.logger as logger
-import tensorflow as tf
 from rllab import config
 from rllab.baselines.linear_feature_baseline import LinearFeatureBaseline
 from rllab.baselines.zero_baseline import ZeroBaseline
 from rllab.misc.ext import set_seed
 from rllab.sampler import parallel_sampler
-from ma_agents.dqn_agent import MADQN
+from rllabwrapper import RLLabEnv
 from sandbox.rocky.tf.algos.ma_vpg import MAVPG
 from sandbox.rocky.tf.core.network import ConvNetwork
 from sandbox.rocky.tf.envs.base import MATfEnv
@@ -18,7 +17,7 @@ from sandbox.rocky.tf.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from sandbox.rocky.tf.spaces.box import Box
 from sandbox.rocky.tf.spaces.discrete import Discrete
 
-from rllabwrapper import RLLabEnv
+from ma_agents.dqn_agent import MADQN
 from . import *
 
 
