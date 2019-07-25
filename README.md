@@ -4,20 +4,17 @@ This repository provides solutions to the most popular Reinforcement Learning al
 
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/) and [MADRL](https://github.com/dhavalsalwala/MADRL). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
-### Reinforcement Techniques
-
-  #### Setup
+#### Setup
   - Create python virtual environment by running MADRL/rllab/environment.yml in conda.
   - Add directories to PYTHONPATH
             
         export PYTHONPATH=$(pwd):$(pwd)/modules/MADRL:$(pwd)/modules/MADRL/rltools:$(pwd)/modules/MADRL/rllab:$PYTHONPATH
 
-  #### Multi Agent RL
+### Reinforcement Techniques
+
+  #### Multi Agent RL  - [Go to Repo](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
   
-  - Multi Agent Deep Q Network
-    - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
-    
-  - Multi Agent REINFORCE
+  - MA Deep Q Network, MA REINFORCE
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
 
   #### Single Agent RL
