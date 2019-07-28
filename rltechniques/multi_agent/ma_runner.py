@@ -47,7 +47,7 @@ class Runner(object):
                     env = data['env']
                     idx = data['itr']
         else:
-            index = 0
+            index = 1
             env, policy = self.parse_env_args(env, args)
 
         self.algo = self.setup(env, policy, start_itr=index)
@@ -167,7 +167,8 @@ class Runner(object):
                          step_size=self.args.step_size,
                          optimizer=ConjugateGradientOptimizer(
                              hvp_approach=FiniteDifferenceHvp(base_eps=1e-5)) if self.args.recurrent else None,
-                         ma_mode=self.args.control)
+                         ma_mode=self.args.control, target_network_update=self.args.target_network_update,
+                         save_param_update=self.args.save_param_update)
 
         elif self.args.algo == 'dqn':
             algo = MADQN(env=env, networks=policy, plot=False,
