@@ -5,7 +5,7 @@ This repository provides solutions to the most popular Reinforcement Learning al
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/) and [MADRL](https://github.com/dhavalsalwala/MADRL). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
 #### Setup
-  - Create python virtual environment by running MADRL/rllab/environment.yml in conda.
+  - Follow the instruction at https://rllab.readthedocs.io/en/latest/user/installation.html to create python virtual environment defined in MADRL/rllab/environment.yml.
   - Add directories to PYTHONPATH
             
         export PYTHONPATH=$(pwd):$(pwd)/modules/MADRL:$(pwd)/modules/MADRL/rltools:$(pwd)/modules/MADRL/rllab:$PYTHONPATH
