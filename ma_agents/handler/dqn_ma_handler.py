@@ -186,8 +186,8 @@ class BatchMADQN(RLAlgorithm):
         # Write TF Summaries
         sess = tf.get_default_session()
         summary = sess.run(self.write_op, feed_dict={self.s_loss: self.loss_after,
-                                                     self.s_avg_rewards: total_rewards,
-                                                     self.s_total_rewards: avg_rewards})
+                                                     self.s_avg_rewards: avg_rewards,
+                                                     self.s_total_rewards: total_rewards})
         self.writer.add_summary(summary, itr)
         self.writer.flush()
 
