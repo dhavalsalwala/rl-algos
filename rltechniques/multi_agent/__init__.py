@@ -98,11 +98,11 @@ class ENVParser(object):
         parser.add_argument('--feature_net', type=str, default=None)
         parser.add_argument('--feature_output', type=int, default=16)
         parser.add_argument('--feature_hidden', type=comma_sep_ints, default='400,300')
-        parser.add_argument('--policy_hidden', type=comma_sep_ints, default='512')
+        parser.add_argument('--policy_hidden', type=comma_sep_ints, default='256')
 
         parser.add_argument('--conv', type=bool, default=True)
         parser.add_argument('--conv_filters', type=comma_sep_ints, default='3,3,3')
-        parser.add_argument('--conv_channels', type=comma_sep_ints, default='32,32,32')
+        parser.add_argument('--conv_channels', type=comma_sep_ints, default='32,64,64')
         parser.add_argument('--conv_strides', type=comma_sep_ints, default='1,1,1')
         parser.add_argument('--conv_pads', type=str, default='SAME')
         parser.add_argument('--batch_normalization', type=bool, default=True)

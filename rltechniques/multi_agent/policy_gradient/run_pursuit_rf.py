@@ -7,17 +7,17 @@ from rltechniques.multi_agent import ENVParser
 from rltechniques.multi_agent.ma_runner import Runner
 
 ENV_OPTIONS = [
-    ('n_evaders', int, 2, ''),
-    ('n_pursuers', int, 2, ''),
-    ('obs_range', int, 3, ''),
+    ('n_evaders', int, 30, ''),
+    ('n_pursuers', int, 8, ''),
+    ('obs_range', int, 10, ''),
     ('map_size', str, '10,10', ''),
     ('map_type', str, 'rectangle', ''),
-    ('n_catch', int, 2, ''),
+    ('n_catch', int, 4, ''),
     ('urgency', float, 0.0, ''),
-    ('surround', int, 1, ''),
+    ('surround', int, 0, ''),
     ('map_file', str, None, ''),
     ('sample_maps', int, 0, ''),
-    ('flatten', int, 1, ''),
+    ('flatten', int, 0, ''),
     ('reward_mech', str, 'local', ''),
     ('catchr', float, 0.01, ''),
     ('term_pursuit', float, 5.0, ''),
