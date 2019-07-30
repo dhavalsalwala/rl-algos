@@ -66,11 +66,8 @@ class ReinforceMASampler(BatchMASampler):
         if self.algo.positive_adv:
             advantages = util.shift_advantages_to_positive(advantages)
 
-        average_discounted_return = \
-            np.mean([path["returns"][0] for path in paths])
-
+        average_discounted_return = np.mean([path["returns"][0] for path in paths])
         un_discounted_returns = [sum(path["rewards"]) for path in paths]
-
         ent = np.mean(self.algo.policy.distribution.entropy(agent_info))
 
         samples_data = dict(
