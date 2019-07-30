@@ -61,19 +61,15 @@ class MADQN(BatchMADQN, Serializable):
         }
         state_info_vars_list = [state_info_vars[k] for k in self.policy.state_info_keys]
 
-        next_q_value = self.policy.dist_info_sym(next_observations)['prob']
+        next_q_value = self.policy.dist_info_sym(next_observations, state_info_vars)['prob']
         next_q_value_target_prob = self.target_policy.dist_info_sym(next_observations)['prob']
-
-        # next_q_value__max_indexes = tf.cast(tf.arg_max(next_q_value, 1), dtype=tf.int32)
-        # actions_next_flatten = next_q_value__max_indexes + tf.range(0, self.batch_size) * self.env.action_space.n
-        # next_q_value_target = tf.gather(tf.reshape(next_q_value_target_prob, [-1]), actions_next_flatten)
 
         next_q_value_target = \
             tf.reduce_sum(tf.mul(next_q_value_target_prob, tf.one_hot(tf.arg_max(next_q_value, 1), self.env.action_space.n)), reduction_indices=1)
 
         target_q_value = rewards + discount_factor * next_q_value_target * (1. - done)
 
-        output_prob = self.policy.dist_info_sym(observations)['prob']
+        output_prob = self.policy.dist_info_sym(observations, state_info_vars)['prob']
         output_q_value = tf.reduce_sum(tf.mul(output_prob, actions), reduction_indices=1)
 
         loss = tf.reduce_mean(tf.squared_difference(output_q_value, target_q_value))

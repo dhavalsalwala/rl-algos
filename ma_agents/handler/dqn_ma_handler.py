@@ -133,18 +133,17 @@ class BatchMADQN(RLAlgorithm):
                     logger.log("Logging diagnostics...")
                     self.log_diagnostics(paths)
 
-                    logger.log("Saving snapshot...")
-                    params = self.get_itr_snapshot(itr, samples_data)  # , **kwargs)
-                    if self.store_paths:
-                        if isinstance(samples_data, list):
-                            params["paths"] = [sd["paths"] for sd in samples_data]
-                        else:
-                            params["paths"] = samples_data["paths"]
-
                     if itr % self.save_param_update == 0:
+                        logger.log("Saving snapshot...")
+                        params = self.get_itr_snapshot(itr, samples_data)  # , **kwargs)
+                        if self.store_paths:
+                            if isinstance(samples_data, list):
+                                params["paths"] = [sd["paths"] for sd in samples_data]
+                            else:
+                                params["paths"] = samples_data["paths"]
                         logger.save_itr_params(itr, params)
+                        logger.log("Saved")
 
-                    logger.log("Saved")
                     logger.record_tabular('Time', time.time() - start_time)
                     logger.record_tabular('ItrTime', time.time() - itr_start_time)
                     logger.dump_tabular(with_prefix=False)
