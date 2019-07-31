@@ -69,8 +69,6 @@ class ExpReplayMASampler(BatchMASampler):
             actions = tensor_utils.concat_tensor_list([path["actions"] for path in paths])
             rewards = tensor_utils.concat_tensor_list([path["rewards"] for path in paths])
             done = tensor_utils.concat_tensor_list([path["done"] for path in paths])
-            env_info = tensor_utils.concat_tensor_dict_list([path["env_info"] for path in paths])
-            agent_info = tensor_utils.concat_tensor_dict_list([path["agent_info"] for path in paths])
 
             target = []
 
@@ -90,8 +88,6 @@ class ExpReplayMASampler(BatchMASampler):
                 rewards=rewards,
                 target=np.array([each for each in target]),
                 done=done,
-                env_infos=env_info,
-                agent_info=agent_info,
                 paths=paths,
             )
 

@@ -23,20 +23,13 @@ def dec_roll_out_random(env, agents, sampler, max_path_length=1000, animated=Fal
         actions = [[] for _ in range(n_agents)]
         rewards = [[] for _ in range(n_agents)]
         done_list = [[] for _ in range(n_agents)]
-        agent_info = [[] for _ in range(n_agents)]
-        env_info_list = [[] for _ in range(n_agents)]
 
         action_list, agent_info_list = agents.get_actions(observation_list)
-        agent_info_list = tensor_utils.split_tensor_dict_list(agent_info_list)
 
         # For each agent
         for index, observation in enumerate(observation_list):
             observations[index].append(observation)
             actions[index].append(env.action_space.flatten(action_list[index]))
-            if agent_info_list is None:
-                agent_info[index].append({})
-            else:
-                agent_info[index].append(agent_info_list[index])
 
         next_observation_list, reward_list, done, env_info = env.step(np.asarray(action_list))
 
@@ -44,10 +37,9 @@ def dec_roll_out_random(env, agents, sampler, max_path_length=1000, animated=Fal
         for index, reward in enumerate(reward_list):
             next_observations[index].append(next_observation_list[index])
             rewards[index].append(reward)
-            env_info_list[index].append(env_info)
             done_list[index].append(done)
 
-        sampler.add_to_replay_memory((observations, actions, rewards, next_observations, done_list, agent_info, env_info_list))
+        sampler.add_to_replay_memory((observations, actions, rewards, next_observations, done_list))
 
         path_length += 1
 
@@ -77,20 +69,13 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
     actions = [[] for _ in range(n_agents)]
     rewards = [[] for _ in range(n_agents)]
     done_list = [[] for _ in range(n_agents)]
-    agent_info = [[] for _ in range(n_agents)]
-    env_info_list = [[] for _ in range(n_agents)]
 
     action_list, agent_info_list = agents.get_actions(observation_list)
-    agent_info_list = tensor_utils.split_tensor_dict_list(agent_info_list)
 
     # For each agent
     for index, observation in enumerate(observation_list):
         observations[index].append(observation)
         actions[index].append(env.action_space.flatten(action_list[index]))
-        if agent_info_list is None:
-            agent_info[index].append({})
-        else:
-            agent_info[index].append(agent_info_list[index])
 
     next_observation_list, reward_list, done, env_info = env.step(np.asarray(action_list))
 
@@ -99,10 +84,9 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
         next_observations[index].append(next_observation_list[index])
         rewards[index].append(reward)
         sampler.algo.total_episodic_rewards[index].append(reward)
-        env_info_list[index].append(env_info)
         done_list[index].append(done)
 
-    sampler.add_to_replay_memory((observations, actions, rewards, next_observations, done_list, agent_info, env_info_list))
+    sampler.add_to_replay_memory((observations, actions, rewards, next_observations, done_list))
 
     samples = sampler.get_sample_from_replay_memory()
     observations = [[] for _ in range(n_agents)]
@@ -110,8 +94,6 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
     actions = [[] for _ in range(n_agents)]
     rewards = [[] for _ in range(n_agents)]
     done_list = [[] for _ in range(n_agents)]
-    agent_info = [[] for _ in range(n_agents)]
-    env_info_list = [[] for _ in range(n_agents)]
     for sample in samples:
         for index in range(n_agents):
             observations[index].append(sample[0][index][0])
@@ -119,8 +101,6 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
             rewards[index].append(sample[2][index])
             next_observations[index].append(sample[3][index][0])
             done_list[index].append(sample[4][index])
-            agent_info[index].append(sample[5][index][0])
-            env_info_list[index].append(sample[6][index][0])
 
     sampler.old_observation_list = next_observation_list
     sampler.done = done
@@ -139,9 +119,7 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
             next_observations=tensor_utils.stack_tensor_list(next_observations[i]),
             actions=np.reshape(tensor_utils.stack_tensor_list(actions[i]), (-1, env.action_space.n)),
             rewards=tensor_utils.stack_tensor_list(rewards[i]),
-            done=tensor_utils.stack_tensor_list(done_list[i]),
-            agent_info=tensor_utils.stack_tensor_dict_list(agent_info[i]),
-            env_info=tensor_utils.stack_tensor_dict_list(env_info_list[i]), ) for i in range(n_agents)
+            done=tensor_utils.stack_tensor_list(done_list[i]),) for i in range(n_agents)
     ]
 
 

@@ -2,7 +2,6 @@ import tensorflow as tf
 from rllab.core.serializable import Serializable
 from rllab.misc import ext
 from rllab.misc.overrides import overrides
-from sandbox.rocky.tf.misc import tensor_utils
 from sandbox.rocky.tf.optimizers.first_order_optimizer import FirstOrderOptimizer
 
 from ma_agents.handler.dqn_ma_handler import BatchMADQN
@@ -31,7 +30,6 @@ class MADQN(BatchMADQN, Serializable):
     @overrides
     def init_opt(self):
 
-        is_recurrent = int(self.policy.recurrent)
         obs_shape = self.env.observation_space.shape
         observations = tf.placeholder(tf.float32, (None, obs_shape[0], obs_shape[1], obs_shape[2]), name='observations')
         next_observations = tf.placeholder(tf.float32, (None, obs_shape[0], obs_shape[1], obs_shape[2]), name='next_observations')
@@ -46,22 +44,7 @@ class MADQN(BatchMADQN, Serializable):
         # target = tf.placeholder(tf.float32, (None, 1), name='target')
         discount_factor = tf.constant(self.discount, name='discount_factor')
 
-        dist = self.policy.distribution
-
-        old_dist_info_vars = {
-            k: tf.placeholder(tf.float32, shape=[None] * (1 + is_recurrent) + list(shape),
-                              name='old_%s' % k)
-            for k, shape in dist.dist_info_specs
-        }
-        old_dist_info_vars_list = [old_dist_info_vars[k] for k in dist.dist_info_keys]
-
-        state_info_vars = {
-            k: tf.placeholder(tf.float32, shape=[None] * (1 + is_recurrent) + list(shape), name=k)
-            for k, shape in self.policy.state_info_specs
-        }
-        state_info_vars_list = [state_info_vars[k] for k in self.policy.state_info_keys]
-
-        next_q_value = self.policy.dist_info_sym(next_observations, state_info_vars)['prob']
+        next_q_value = self.policy.dist_info_sym(next_observations)['prob']
         next_q_value_target_prob = self.target_policy.dist_info_sym(next_observations)['prob']
 
         next_q_value_target = \
@@ -69,24 +52,13 @@ class MADQN(BatchMADQN, Serializable):
 
         target_q_value = rewards + discount_factor * next_q_value_target * (1. - done)
 
-        output_prob = self.policy.dist_info_sym(observations, state_info_vars)['prob']
+        output_prob = self.policy.dist_info_sym(observations)['prob']
         output_q_value = tf.reduce_sum(tf.mul(output_prob, actions), reduction_indices=1)
 
         loss = tf.reduce_mean(tf.squared_difference(output_q_value, target_q_value))
 
-        dist_info_vars = self.policy.dist_info_sym(observations, state_info_vars)
-        kl = dist.kl_sym(old_dist_info_vars, dist_info_vars)
-
-        mean_kl = tf.reduce_mean(kl)
-        max_kl = tf.reduce_max(kl)
-
-        input_list = [observations, next_observations, rewards, done, actions] + state_info_vars_list
+        input_list = [observations, next_observations, rewards, done, actions]
         self.optimizer.update_opt(loss=loss, target=self.policy, inputs=input_list)
-
-        f_kl = tensor_utils.compile_function(
-            inputs=input_list + old_dist_info_vars_list,
-            outputs=[mean_kl, max_kl], )
-        self.opt_info = dict(f_kl=f_kl, )
 
         self.writer = tf.train.SummaryWriter("summary/")
         self.write_op = tf.merge_summary([
@@ -96,17 +68,12 @@ class MADQN(BatchMADQN, Serializable):
         ])
 
     @overrides
-    def optimize_policy(self, time_step, itr, samples_data):
+    def optimize_policy(self, itr, samples_data):
         inputs = ext.extract(samples_data, "observations", "next_observations", "rewards", "done", "actions")
-        agent_info = samples_data["agent_info"]
-        state_info_list = [agent_info[k] for k in self.policy.state_info_keys]
-        inputs += tuple(state_info_list)
-        dist_info_list = [agent_info[k] for k in self.policy.distribution.dist_info_keys]
 
         self.optimizer.optimize(inputs)
         self.loss_after = self.optimizer.loss(inputs)
 
-        self.mean_kl, self.max_kl = self.opt_info['f_kl'](*(list(inputs) + dist_info_list))
         return dict()
 
     @overrides

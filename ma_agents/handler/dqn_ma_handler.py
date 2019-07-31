@@ -64,6 +64,9 @@ class BatchMADQN(RLAlgorithm):
         self.write_op = None
         self.pre_trained_size = pre_trained_size
         self.total_episodic_rewards = None
+        self.s_loss = None
+        self.s_avg_rewards = None
+        self.s_total_rewards = None
 
         if sampler_cls is None:
             sampler_cls = ExpReplayMASampler
@@ -103,7 +106,6 @@ class BatchMADQN(RLAlgorithm):
             total_time_step = 0
             for itr in range(self.start_itr, self.n_itr + 1):
                 itr_start_time = time.time()
-                agent_info = np.zeros((0, 5))
                 self.total_episodic_rewards = [[] for _ in range(len(self.env.agents))]
                 with logger.prefix('itr #%d | ' % itr):
                     p_bar = ProgBarCounter(self.max_path_length)
@@ -112,10 +114,7 @@ class BatchMADQN(RLAlgorithm):
                         total_time_step += 1
                         paths = self.obtain_samples(itr)
                         samples_data = self.process_samples(itr, paths)
-                        self.optimize_policy(time_step+1, itr, samples_data)
-
-                        # For statistics only
-                        agent_info = np.vstack([agent_info, samples_data['agent_info']['prob']])
+                        self.optimize_policy(itr, samples_data)
 
                         p_bar.inc(time_step + 1)
                         if self.sampler.done:
@@ -123,7 +122,7 @@ class BatchMADQN(RLAlgorithm):
 
                     p_bar.stop()
                     self.sampler.done = True
-                    self.log_statistics(itr, time_step+1, agent_info)
+                    self.log_statistics(itr, time_step+1)
                     logger.log("Logging statistics...")
 
                     if total_time_step % self.target_network_update == 0:
@@ -154,7 +153,7 @@ class BatchMADQN(RLAlgorithm):
 
         self.shutdown_worker()
 
-    def log_statistics(self, itr, total_steps, agent_info):
+    def log_statistics(self, itr, total_steps):
 
         rewards = [sum(reward) for reward in self.total_episodic_rewards]
 
@@ -169,15 +168,8 @@ class BatchMADQN(RLAlgorithm):
 
         logger.record_tabular('MaxReturn', np.max(rewards))
         logger.record_tabular('MinReturn', np.min(rewards))
-
-        ent = np.mean(self.policy.distribution.entropy({'prob': agent_info}))
-        logger.record_tabular('Entropy', ent)
-
-        logger.record_tabular('Perplexity', np.exp(ent))
         logger.record_tabular('StdReturn', np.std(rewards))
         logger.record_tabular("Loss", self.loss_after)
-        logger.record_tabular('MeanKL', self.mean_kl)
-        logger.record_tabular('MaxKL', self.max_kl)
 
         self.log_summary(itr, total_rewards, avg_rewards)
 
