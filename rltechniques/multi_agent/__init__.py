@@ -80,7 +80,7 @@ class ENVParser(object):
             help='Add tf or th to the algo name to run tensorflow or theano version')
 
         parser.add_argument('--max_path_length', type=int, default=200)
-        parser.add_argument('--batch_size', type=int, default=32)
+        parser.add_argument('--batch_size', type=int, default=800)
         parser.add_argument('--n_parallel', type=int, default=1)
         parser.add_argument('--resume_from', type=str, default=None,
                             help='Name of the pickle file to resume experiment from.')
@@ -98,7 +98,7 @@ class ENVParser(object):
         parser.add_argument('--feature_net', type=str, default=None)
         parser.add_argument('--feature_output', type=int, default=16)
         parser.add_argument('--feature_hidden', type=comma_sep_ints, default='400,300')
-        parser.add_argument('--policy_hidden', type=comma_sep_ints, default='256')
+        parser.add_argument('--policy_hidden', type=comma_sep_ints, default='512')
 
         parser.add_argument('--conv', type=bool, default=True)
         parser.add_argument('--conv_filters', type=comma_sep_ints, default='3,3,3')

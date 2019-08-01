@@ -1,30 +1,26 @@
 import time
-
-import numpy as np
-import rllab.plotter as plotter
-import tensorflow as tf
 from rllab.algos.base import RLAlgorithm
-from rllab.misc import logger
-from rllab.sampler.stateful_pool import ProgBarCounter
+import rllab.misc.logger as logger
+import rllab.plotter as plotter
 from sandbox.rocky.tf.policies.base import Policy
+import tensorflow as tf
 from ma_agents.sampler.a2c_sampler import A2CMASampler
+from ma_agents.util import ValueEstimator
 
 
-class BatchMAA2C(RLAlgorithm):
-    """
-    Base class for batch sampling-based deep q network.
-    """
+class A2CMABase(RLAlgorithm):
 
-    def __init__(self, env, networks, scope=None, n_itr=5000,
-                 start_itr=0, batch_size=32, max_path_length=200, discount=0.99,
-                 plot=False, pause_for_plot=False, center_adv=True,
-                 store_paths=False, whole_paths=True, sampler_cls=None,
-                 sampler_args=None, force_batch_sampler=True, pre_trained_size=10000,
-                 save_param_update=125, **kwargs):
+    def __init__(self, env, policy_or_policies, baseline_or_baselines, scope=None, n_itr=500,
+                 start_itr=0, batch_size=5000, max_path_length=500, discount=0.99, gae_lambda=1,
+                 plot=False, pause_for_plot=False, center_adv=True, positive_adv=False, critic_learning_rate=1e-3,
+                 store_paths=False, whole_paths=True, fixed_horizon=False, sampler_cls=None,
+                 sampler_args=None, save_param_update=125, force_batch_sampler=True,
+                 entropy_coefficient=0.01, value_coefficient=0.5, **kwargs):
         """
         :param env: Environment
         :param policy: Policy
         :type policy: Policy
+        :param baseline: Baseline
         :param scope: Scope for identifying the algorithm. Must be specified if running multiple algorithms
         simultaneously, each using different environments and policies
         :param n_itr: Number of iterations.
@@ -32,46 +28,49 @@ class BatchMAA2C(RLAlgorithm):
         :param batch_size: Number of samples per iteration.
         :param max_path_length: Maximum length of a single rollout.
         :param discount: Discount.
+        :param gae_lambda: Lambda used for generalized advantage estimation.
         :param plot: Plot evaluation run after each iteration.
         :param pause_for_plot: Whether to pause before contiuing when plotting.
+        :param center_adv: Whether to rescale the advantages so that they have mean 0 and standard deviation 1.
+        :param positive_adv: Whether to shift the advantages so that they are always positive. When used in
+        conjunction with center_adv the advantages will be standardized before shifting.
         :param store_paths: Whether to save all paths data to the snapshot.
         :return:
         """
+
         self.ma_mode = kwargs.pop('ma_mode', 'centralized')
         self.env = env
-        self.policy = networks['actor']
-        self.critic = networks['critic']
+        self.policy = policy_or_policies
+        self.writer = None
+        self.write_op = None
+        self.baseline = baseline_or_baselines
         self.scope = scope
         self.n_itr = n_itr
         self.start_itr = start_itr
         self.batch_size = batch_size
         self.max_path_length = max_path_length
         self.discount = discount
+        self.gae_lambda = gae_lambda
         self.plot = plot
         self.pause_for_plot = pause_for_plot
         self.center_adv = center_adv
+        self.positive_adv = positive_adv
         self.store_paths = store_paths
         self.whole_paths = whole_paths
+        self.fixed_horizon = fixed_horizon
         self.force_batch_sampler = force_batch_sampler
-        self.loss_after = 0
-        self.mean_kl = 0
-        self.max_kl = 0
         self.save_param_update = save_param_update
-        self.writer = None
-        self.write_op = None
-        self.pre_trained_size = pre_trained_size
-        self.total_episodic_rewards = None
+        self.s_loss = None
+        self.s_avg_rewards = None
+        self.s_total_rewards = None
+        self.entropy_coefficient = entropy_coefficient
+        self.value_estimator = ValueEstimator(env, critic_learning_rate, value_coefficient)
 
         if sampler_cls is None:
             sampler_cls = A2CMASampler
         if sampler_args is None:
             sampler_args = dict()
-        self.sampler = sampler_cls(algo=self, **sampler_args)
-
-        if plot:
-            from rllab.plotter import plotter
-            plotter.init_worker()
-
+        self.sampler = sampler_cls(self, **sampler_args)
         self.init_opt()
 
     def start_worker(self):
@@ -93,46 +92,29 @@ class BatchMAA2C(RLAlgorithm):
             sess.run(tf.initialize_all_variables())
             self.start_worker()
             start_time = time.time()
-            total_time_step = 0
-            for itr in range(self.start_itr, self.n_itr + 1):
+            for itr in range(self.start_itr, self.n_itr):
                 itr_start_time = time.time()
-                agent_info = np.zeros((0, 5))
-                self.total_episodic_rewards = [[] for _ in range(len(self.env.agents))]
                 with logger.prefix('itr #%d | ' % itr):
-                    p_bar = ProgBarCounter(self.max_path_length)
-                    logger.log("Running trajectories, obtaining samples and optimizing Q network...")
-                    for time_step in range(self.max_path_length):
-                        total_time_step += 1
-                        paths = self.obtain_samples(itr)
-                        samples_data = self.process_samples(itr, paths)
-                        self.optimize_policy(time_step+1, itr, samples_data)
-
-                        # For statistics only
-                        agent_info = np.vstack([agent_info, samples_data['agent_info']['prob']])
-
-                        p_bar.inc(time_step + 1)
-                        if self.sampler.done:
-                            break
-
-                    p_bar.stop()
-                    self.sampler.done = True
-                    logger.log("Logging statistics...")
-                    self.log_statistics(itr, time_step+1, agent_info)
+                    logger.log("Obtaining samples...")
+                    paths = self.obtain_samples(itr)
+                    logger.log("Processing samples...")
+                    samples_data = self.process_samples(itr, paths)
                     logger.log("Logging diagnostics...")
                     self.log_diagnostics(paths)
-
-                    logger.log("Saving snapshot...")
-                    params = self.get_itr_snapshot(itr, samples_data)  # , **kwargs)
-                    if self.store_paths:
-                        if isinstance(samples_data, list):
-                            params["paths"] = [sd["paths"] for sd in samples_data]
-                        else:
-                            params["paths"] = samples_data["paths"]
+                    logger.log("Optimizing actor policy...")
+                    self.optimize_policy(itr, samples_data)
 
                     if itr % self.save_param_update == 0:
+                        logger.log("Saving snapshot...")
+                        params = self.get_itr_snapshot(itr, samples_data)  # , **kwargs)
+                        if self.store_paths:
+                            if isinstance(samples_data, list):
+                                params["paths"] = [sd["paths"] for sd in samples_data]
+                            else:
+                                params["paths"] = samples_data["paths"]
                         logger.save_itr_params(itr, params)
+                        logger.log("Saved")
 
-                    logger.log("Saved")
                     logger.record_tabular('Time', time.time() - start_time)
                     logger.record_tabular('ItrTime', time.time() - itr_start_time)
                     logger.dump_tabular(with_prefix=False)
@@ -140,51 +122,20 @@ class BatchMAA2C(RLAlgorithm):
                         self.update_plot()
                         if self.pause_for_plot:
                             input("Plotting evaluation run: Press Enter to " "continue...")
-
         self.shutdown_worker()
 
-    def log_statistics(self, itr, total_steps, agent_info):
-
-        rewards = [sum(reward) for reward in self.total_episodic_rewards]
-
-        logger.record_tabular('Iteration', itr)
-        logger.record_tabular('NofTrajectories', total_steps)
-
-        avg_rewards = np.mean(rewards)
-        logger.record_tabular('AverageReturn', avg_rewards)
-
-        total_rewards = np.sum(rewards)
-        logger.record_tabular('TotalReturn', total_rewards)
-
-        logger.record_tabular('MaxReturn', np.max(rewards))
-        logger.record_tabular('MinReturn', np.min(rewards))
-
-        ent = np.mean(self.policy.distribution.entropy({'prob': agent_info}))
-        logger.record_tabular('Entropy', ent)
-
-        logger.record_tabular('Perplexity', np.exp(ent))
-        logger.record_tabular('StdReturn', np.std(rewards))
-        logger.record_tabular("Loss", self.loss_after)
-        logger.record_tabular('MeanKL', self.mean_kl)
-        logger.record_tabular('MaxKL', self.max_kl)
-
-        self.log_summary(itr, total_rewards, avg_rewards)
-
-    def log_summary(self, itr, total_rewards, avg_rewards):
+    def log_summary(self, itr, loss, avg_rewards, total_rewards):
         # Write TF Summaries
         sess = tf.get_default_session()
-        summary = sess.run(self.write_op, feed_dict={self.s_loss: self.loss_after,
+        summary = sess.run(self.write_op, feed_dict={self.s_loss: loss,
                                                      self.s_avg_rewards: avg_rewards,
                                                      self.s_total_rewards: total_rewards})
         self.writer.add_summary(summary, itr)
         self.writer.flush()
 
     def log_diagnostics(self, paths):
-        if self.ma_mode == 'decentralized':
-            import itertools
-            self.env.log_diagnostics(list(itertools.chain.from_iterable(paths)))
-        else:
-            pass
+        import itertools
+        self.env.log_diagnostics(list(itertools.chain.from_iterable(paths)))
 
     def init_opt(self):
         """

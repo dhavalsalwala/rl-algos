@@ -210,7 +210,7 @@ def _worker_collect_path_one_env(G, max_path_length, ma_mode, sampler, scope=Non
         raise NotImplementedError("incorrect rollout type")
 
 
-def _worker_collect_path_one_env_once(G, max_path_length, ma_mode, sampler, scope=None):
+def _worker_collect_path_one_env_a2c(G, max_path_length, ma_mode, sampler, scope=None):
     G = _get_scoped_G(G, scope)
     if ma_mode == 'decentralized':
         paths = dec_roll_out_once(G.env, G.policy, sampler, max_path_length)
@@ -232,7 +232,7 @@ def sample_paths(policy_params, max_samples, ma_mode, sampler, max_path_length=n
                                       args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=False)
 
 
-def sample_paths_once(policy_params, max_samples, ma_mode, sampler, max_path_length=np.inf, env_params=None,
+def sample_paths_a2c(policy_params, max_samples, ma_mode, sampler, max_path_length=np.inf, env_params=None,
                  scope=None):
     singleton_pool.run_each(_worker_set_policy_params,
                             [(policy_params, ma_mode, scope)] * singleton_pool.n_parallel)
@@ -240,7 +240,7 @@ def sample_paths_once(policy_params, max_samples, ma_mode, sampler, max_path_len
         singleton_pool.run_each(_worker_set_env_params,
                                 [(env_params, scope)] * singleton_pool.n_parallel)
 
-    return singleton_pool.run_collect(_worker_collect_path_one_env_once, threshold=max_samples,
+    return singleton_pool.run_collect(_worker_collect_path_one_env_a2c, threshold=max_samples,
                                       args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=False)
 
 

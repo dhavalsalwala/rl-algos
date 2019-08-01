@@ -1,28 +1,27 @@
 import tensorflow as tf
 from rllab.core.serializable import Serializable
 from rllab.misc import ext
+from rllab.misc import logger
 from rllab.misc.overrides import overrides
 from sandbox.rocky.tf.misc import tensor_utils
 from sandbox.rocky.tf.optimizers.first_order_optimizer import FirstOrderOptimizer
+import numpy as np
+from ma_agents.handler.a2c_ma_handler import A2CMABase
 
-from ma_agents.handler.a2c_ma_handler import BatchMAA2C
 
-
-class MAA2C(BatchMAA2C, Serializable):
+class MAA2C(A2CMABase, Serializable):
     """
-    Multi-agent Deep Queue Network.
+    Multi-agent Advantage Actor Critic.
     """
 
-    def __init__(self, env, actor_learning_rate=1e-4, critic_learning_rate=1e-3, optimizer=None, optimizer_args=None, **kwargs):
+    def __init__(self, env, actor_learning_rate=1e-4, optimizer=None, optimizer_args=None, **kwargs):
         Serializable.quick_init(self, locals())
         if optimizer is None:
             default_args = dict(
                 batch_size=None,
                 max_epochs=1, )
-            optimizer_args = dict(default_args, **{'learning_rate': critic_learning_rate})
-            self.critic_optimizer = FirstOrderOptimizer(**optimizer_args)
             optimizer_args = dict(default_args, **{'learning_rate': actor_learning_rate})
-            self.actor_optimizer = FirstOrderOptimizer(**optimizer_args)
+            self.optimizer = FirstOrderOptimizer(**optimizer_args)
         self.opt_info = None
         super(MAA2C, self).__init__(env=env, **kwargs)
 
@@ -32,9 +31,9 @@ class MAA2C(BatchMAA2C, Serializable):
         is_recurrent = int(self.policy.recurrent)
         obs_shape = self.env.observation_space.shape
         observations = tf.placeholder(tf.float32, (None, obs_shape[0], obs_shape[1], obs_shape[2]), name='observations')
-        actions = self.env.action_space.new_tensor_variable('actions', extra_dims=1 + is_recurrent,)
-        td_target = tensor_utils.new_tensor(name='td_target', ndim=1 + is_recurrent, dtype=tf.float32,)
+        actions = tf.placeholder(tf.float32, (None, self.env.action_space.n), name='observations')
         td_error_advantage = tensor_utils.new_tensor(name='td_error_advantage', ndim=1 + is_recurrent, dtype=tf.float32,)
+        entropy_coefficient = tf.constant(self.entropy_coefficient, name='entropy_coefficient')
 
         self.s_loss = tf.placeholder(tf.float32, name='s_loss')
         self.s_avg_rewards = tf.placeholder(tf.float32, name='s_avg_rewards')
@@ -56,20 +55,22 @@ class MAA2C(BatchMAA2C, Serializable):
         state_info_vars_list = [state_info_vars[k] for k in self.policy.state_info_keys]
 
         dist_info_vars = self.policy.dist_info_sym(observations, state_info_vars)
-        logli = dist.log_likelihood_sym(actions, dist_info_vars)
-        kl = dist.kl_sym(old_dist_info_vars, dist_info_vars)
 
-        actor_loss = -tf.reduce_mean(logli * td_error_advantage)
+        kl = dist.kl_sym(old_dist_info_vars, dist_info_vars)
         mean_kl = tf.reduce_mean(kl)
         max_kl = tf.reduce_max(kl)
 
-        input_list_actor = [observations, actions, td_error_advantage] + state_info_vars_list
-        self.actor_optimizer.update_opt(loss=actor_loss, target=self.policy, inputs=input_list_actor)
+        log_likelihood_prob = dist.log_likelihood_sym(actions, dist_info_vars)
+        actor_loss = -tf.reduce_mean(log_likelihood_prob * td_error_advantage)
 
-        value_estimates = tf.squeeze(self.critic.dist_info_sym(observations)['prob'], squeeze_dims=[1, ])
-        critic_loss = tf.reduce_mean(tf.squared_difference(value_estimates, td_target))
-        input_list_critic = [observations, td_target]
-        self.critic_optimizer.update_opt(loss=critic_loss, target=self.critic, inputs=input_list_critic)
+        # neg_log_policy = -tf.log(tf.clip_by_value(dist_info_vars['prob'], 1e-7, 1))
+        # actor_loss = tf.reduce_mean(tf.reduce_sum(neg_log_policy * actions, reduction_indices=1) * td_error_advantage)
+        # entropy_loss = tf.reduce_mean(tf.reduce_sum(dist_info_vars['prob'] * neg_log_policy, reduction_indices=1))
+        entropy_loss = tf.reduce_mean(self.policy.distribution.entropy_sym(dist_info_vars))
+
+        total_loss = actor_loss - (entropy_loss * entropy_coefficient)
+        input_list_actor = [observations, actions, td_error_advantage] + state_info_vars_list
+        self.optimizer.update_opt(loss=total_loss, target=self.policy, inputs=input_list_actor)
 
         f_kl = tensor_utils.compile_function(
             inputs=input_list_actor + old_dist_info_vars_list,
@@ -84,27 +85,32 @@ class MAA2C(BatchMAA2C, Serializable):
         ])
 
     @overrides
-    def optimize_policy(self, time_step, itr, samples_data):
+    def optimize_policy(self, itr, samples_data):
 
-        actor_inputs = ext.extract(samples_data, "observations", "actions", "td_error")
+        inputs = ext.extract(samples_data, "observations", "actions", "td_error")
         agent_info = samples_data["agent_info"]
         state_info_list = [agent_info[k] for k in self.policy.state_info_keys]
-        actor_inputs += tuple(state_info_list)
+        inputs += tuple(state_info_list)
         dist_info_list = [agent_info[k] for k in self.policy.distribution.dist_info_keys]
 
-        self.actor_optimizer.optimize(actor_inputs)
-        self.loss_after = self.actor_optimizer.loss(actor_inputs)
+        loss_before = self.optimizer.loss(inputs)
+        self.optimizer.optimize(inputs)
+        loss_after = self.optimizer.loss(inputs)
 
-        critic_inputs = ext.extract(samples_data, "observations", "td_target")
-        self.critic_optimizer.optimize(critic_inputs)
+        logger.record_tabular("LossBefore", loss_before)
+        logger.record_tabular("LossAfter", loss_after)
 
-        self.mean_kl, self.max_kl = self.opt_info['f_kl'](*(list(actor_inputs) + dist_info_list))
-        return dict()
+        rewards = samples_data['rewards']
+        self.log_summary(itr, loss_after, np.mean(rewards), np.sum(rewards))
+
+        mean_kl, max_kl = self.opt_info['f_kl'](*(list(inputs) + dist_info_list))
+        logger.record_tabular('MeanKL', mean_kl)
+        logger.record_tabular('MaxKL', max_kl)
 
     @overrides
     def get_itr_snapshot(self, itr, samples_data):
         return dict(
             itr=itr,
             actor_network=self.policy,
-            critic_network=self.critic,
+            critic_network=self.value_estimator,
             env=self.env, )

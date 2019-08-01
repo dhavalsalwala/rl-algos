@@ -9,7 +9,7 @@ from rltechniques.multi_agent.ma_runner import Runner
 ENV_OPTIONS = [
     ('n_evaders', int, 30, ''),
     ('n_pursuers', int, 8, ''),
-    ('obs_range', int, 7, ''),
+    ('obs_range', int, 10, ''),
     ('map_size', str, '10,10', ''),
     ('map_type', str, 'rectangle', ''),
     ('n_catch', int, 2, ''),
@@ -17,7 +17,7 @@ ENV_OPTIONS = [
     ('surround', int, 0, ''),
     ('map_file', str, None, ''),
     ('sample_maps', int, 0, ''),
-    ('flatten', int, 1, ''),
+    ('flatten', int, 0, ''),
     ('reward_mech', str, 'local', ''),
     ('catchr', float, 0.01, ''),
     ('term_pursuit', float, 5.0, ''),

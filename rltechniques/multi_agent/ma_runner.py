@@ -75,24 +75,6 @@ class Runner(object):
                                                         prob_network=feature_network)
                 policy = {'q_network': q_network, 'target_q_network': target_q_network}
 
-            elif args.algo == 'a2c':
-                actor = CategoricalMLPPolicy(name='actor', env_spec=env.spec,
-                                             prob_network=feature_network)
-
-                feature_network_critic = ConvNetwork(name='feature_net_critic',
-                                                     input_shape=env.spec.observation_space.shape,
-                                                     output_dim=1, conv_filters=chans,
-                                                     conv_filter_sizes=filts, conv_strides=strides,
-                                                     conv_pads=(args.conv_pads,) * len(chans),
-                                                     hidden_sizes=tuple(args.policy_hidden),
-                                                     hidden_nonlinearity=tf.nn.relu,
-                                                     output_nonlinearity=None,
-                                                     batch_normalization=args.batch_normalization)
-                critic = CategoricalMLPPolicy(name='critic', env_spec=env.spec,
-                                              prob_network=feature_network_critic)
-
-                policy = {'actor': actor, 'critic': critic}
-
             else:
                 policy = CategoricalMLPPolicy(name='policy', env_spec=env.spec,
                                               prob_network=feature_network)
@@ -156,10 +138,11 @@ class Runner(object):
                          save_param_update=self.args.save_param_update)
 
         elif self.args.algo == 'a2c':
-            algo = MAA2C(env=env, networks=policy, plot=False,
+            algo = MAA2C(env=env, policy_or_policies=policy, plot=False, baseline_or_baselines=baseline,
                          batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
                          max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
                          discount=self.args.discount, ma_mode=self.args.control,
-                         actor_learning_rate=self.args.policy_lr, critic_learning_rate=self.args.qfunc_lr)
+                         actor_learning_rate=self.args.policy_lr, critic_learning_rate=self.args.qfunc_lr,
+                         value_coefficient=0.5, entropy_coefficient=0.01)
 
         return algo
