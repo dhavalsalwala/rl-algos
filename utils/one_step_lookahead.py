@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def one_step_lookahead(environment, state, V, discount_factor):
+def step_into(environment, state, V, discount_factor):
     """
     Helper function to calculate a state-value function.
     :param environment: Initialized OpenAI gym environment object.

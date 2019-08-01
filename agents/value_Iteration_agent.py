@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.OneStepLookahead import one_step_lookahead
+from utils.one_step_lookahead import step_into
 
 
 def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations=1e9):
@@ -25,7 +25,7 @@ def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations
         for state in range(environment.nS):
 
             # Do a one-step lookahead to calculate state-action values
-            action_value = one_step_lookahead(environment, state, V, discount_factor)
+            action_value = step_into(environment, state, V, discount_factor)
 
             # Select best action to perform based on the highest state-action value
             best_action_value = np.max(action_value)
@@ -38,7 +38,7 @@ def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations
 
         # Check if we can stop
         if delta < theta:
-            print(f'Value-iteration converged at iteration#{i}.')
+            print('Value-iteration converged at iteration#{i}.')
             break
 
     # Create a deterministic policy using the optimal value function
@@ -47,7 +47,7 @@ def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations
     for state in range(environment.nS):
 
         # One step lookahead to find the best action for this state
-        action_value = one_step_lookahead(environment, state, V, discount_factor)
+        action_value = step_into(environment, state, V, discount_factor)
 
         # Select best action based on the highest state-action value
         best_action = np.argmax(action_value)

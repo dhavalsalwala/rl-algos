@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.OneStepLookahead import one_step_lookahead
+from utils.one_step_lookahead import step_into
 
 
 def policy_evaluation(policy, environment, discount_factor=1.0, theta=1e-9, max_iter=1e9):
@@ -51,7 +51,7 @@ def policy_evaluation(policy, environment, discount_factor=1.0, theta=1e-9, max_
 
         # Terminate if value change is insignificant
         if delta < theta:
-            print(f'Policy evaluated in {evaluation_iterations} iterations.')
+            print('Policy evaluated in {evaluation_iterations} iterations.')
             return V
 
 
@@ -86,7 +86,7 @@ def policy_iteration(environment, discount_factor=1.0, max_iter=1e9):
 
             # Look one step ahead and evaluate if current action is optimal
             # We will try every possible action in a current state
-            action_value = one_step_lookahead(environment, state, V, discount_factor)
+            action_value = step_into(environment, state, V, discount_factor)
 
             # Select a better action
             best_action = np.argmax(action_value)
@@ -102,5 +102,5 @@ def policy_iteration(environment, discount_factor=1.0, max_iter=1e9):
 
         # If the algorithm converged and policy is not changing anymore, than return final policy and value function
         if stable_policy:
-            print(f'Evaluated {evaluated_policies} policies.')
+            print('Evaluated {evaluated_policies} policies.')
             return policy, V
