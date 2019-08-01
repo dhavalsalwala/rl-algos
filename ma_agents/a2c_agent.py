@@ -87,7 +87,7 @@ class MAA2C(A2CMABase, Serializable):
         self.write_op = tf.merge_summary([
             tf.scalar_summary("Actor Loss", self.actor_loss),
             tf.scalar_summary("Critic Loss", self.critic_loss),
-            tf.scalar_summary("Entropy", self.entropy_loss),
+            tf.scalar_summary("Entropy Loss", self.entropy_loss),
             tf.scalar_summary("Total Rewards", self.total_rewards),
             tf.scalar_summary("Avg Rewards", self.avg_rewards)
         ])

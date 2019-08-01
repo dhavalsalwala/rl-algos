@@ -76,8 +76,8 @@ class ReinforceMASampler(BatchMASampler):
             rewards=rewards,
             returns=returns,
             advantages=advantages,
-            env_infos=env_info,
-            agent_infos=agent_info,
+            env_info=env_info,
+            agent_info=agent_info,
             paths=paths,
         )
 

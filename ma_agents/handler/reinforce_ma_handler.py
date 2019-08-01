@@ -57,12 +57,10 @@ class ReinforceMABase(RLAlgorithm):
         self.fixed_horizon = fixed_horizon
         self.force_batch_sampler = force_batch_sampler
         self.save_param_update = save_param_update
-        self.loss = 0
-        self.avg_rewards = 0
-        self.total_rewards = 0
-        self.s_loss = None
-        self.s_avg_rewards = None
-        self.s_total_rewards = None
+        self.loss = None
+        self.entropy_loss = None
+        self.avg_rewards = None
+        self.total_rewards = None
 
         if sampler_cls is None:
             sampler_cls = ReinforceMASampler
@@ -123,12 +121,13 @@ class ReinforceMABase(RLAlgorithm):
                             input("Plotting evaluation run: Press Enter to " "continue...")
         self.shutdown_worker()
 
-    def log_summary(self, itr):
+    def log_summary(self, itr, loss, entropy_loss, avg_rewards, total_rewards):
         # Write TF Summaries
         sess = tf.get_default_session()
-        summary = sess.run(self.write_op, feed_dict={self.s_loss: self.loss,
-                                                     self.s_avg_rewards: self.avg_rewards,
-                                                     self.s_total_rewards: self.total_rewards})
+        summary = sess.run(self.write_op, feed_dict={self.loss: loss,
+                                                     self.entropy_loss: entropy_loss,
+                                                     self.avg_rewards: avg_rewards,
+                                                     self.total_rewards: total_rewards})
         self.writer.add_summary(summary, itr)
         self.writer.flush()
 

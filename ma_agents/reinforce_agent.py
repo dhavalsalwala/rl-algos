@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 from rllab.core.serializable import Serializable
 from rllab.misc import ext
@@ -39,9 +40,10 @@ class MAReinforce(ReinforceMABase, Serializable):
         advantage = tensor_utils.new_tensor(name='advantage', ndim=1, dtype=tf.float32, )
         dist = self.policy.distribution
 
-        self.s_loss = tf.placeholder(tf.float32, name='s_loss')
-        self.s_avg_rewards = tf.placeholder(tf.float32, name='s_avg_rewards')
-        self.s_total_rewards = tf.placeholder(tf.float32, name='s_total_rewards')
+        self.loss = tf.placeholder(tf.float32, name='actor_loss')
+        self.entropy_loss = tf.placeholder(tf.float32, name='entropy_loss')
+        self.avg_rewards = tf.placeholder(tf.float32, name='avg_rewards')
+        self.total_rewards = tf.placeholder(tf.float32, name='total_rewards')
 
         old_dist_info_vars = {
             k: tf.placeholder(tf.float32, shape=[None] * 1 + list(shape),
@@ -75,23 +77,28 @@ class MAReinforce(ReinforceMABase, Serializable):
 
         self.writer = tf.train.SummaryWriter("summary/")
         self.write_op = tf.merge_summary([
-            tf.scalar_summary("Loss", self.s_loss),
-            tf.scalar_summary("Total Rewards", self.s_total_rewards),
-            tf.scalar_summary("Avg Rewards", self.s_avg_rewards)
+            tf.scalar_summary("Loss", self.loss),
+            tf.scalar_summary("Entropy Loss", self.entropy_loss),
+            tf.scalar_summary("Total Rewards", self.total_rewards),
+            tf.scalar_summary("Avg Rewards", self.avg_rewards)
         ])
 
     @overrides
     def optimize_policy(self, itr, samples_data):
         inputs = ext.extract(samples_data, "observations", "actions", "advantages")
-        agent_info = samples_data["agent_infos"]
+        agent_info = samples_data["agent_info"]
         state_info_list = [agent_info[k] for k in self.policy.state_info_keys]
         inputs += tuple(state_info_list)
         dist_info_list = [agent_info[k] for k in self.policy.distribution.dist_info_keys]
         loss_before = self.optimizer.loss(inputs)
         self.optimizer.optimize(inputs)
-        self.loss = self.optimizer.loss(inputs)
+        loss_after = self.optimizer.loss(inputs)
         logger.record_tabular("LossBefore", loss_before)
-        logger.record_tabular("LossAfter", self.loss)
+        logger.record_tabular("LossAfter", loss_after)
+
+        rewards = samples_data['rewards']
+        entropy_loss = np.mean(self.policy.distribution.entropy(agent_info))
+        self.log_summary(itr, loss_after, entropy_loss, np.mean(rewards), np.sum(rewards))
 
         mean_kl, max_kl = self.opt_info['f_kl'](*(list(inputs) + dist_info_list))
         logger.record_tabular('MeanKL', mean_kl)
