@@ -5,7 +5,7 @@ import rllab.plotter as plotter
 from sandbox.rocky.tf.policies.base import Policy
 import tensorflow as tf
 from ma_agents.sampler.a2c_sampler import A2CMASampler
-from ma_agents.util import ValueEstimator
+from utils.estimator import ValueFunctionEstimator
 
 
 class A2CMABase(RLAlgorithm):
@@ -15,7 +15,7 @@ class A2CMABase(RLAlgorithm):
                  plot=False, pause_for_plot=False, center_adv=True, positive_adv=False, critic_learning_rate=1e-3,
                  store_paths=False, whole_paths=True, fixed_horizon=False, sampler_cls=None,
                  sampler_args=None, save_param_update=125, force_batch_sampler=True,
-                 entropy_coefficient=0.01, value_coefficient=0.5, **kwargs):
+                 entropy_coefficient=0.01, value_coefficient=0.5, clip_grads=None, **kwargs):
         """
         :param env: Environment
         :param policy: Policy
@@ -60,18 +60,21 @@ class A2CMABase(RLAlgorithm):
         self.fixed_horizon = fixed_horizon
         self.force_batch_sampler = force_batch_sampler
         self.save_param_update = save_param_update
-        self.s_loss = None
-        self.s_avg_rewards = None
-        self.s_total_rewards = None
+        self.clip_grads = clip_grads
+        self.actor_loss = None
+        self.critic_loss = None
+        self.entropy_loss = None
+        self.avg_rewards = None
+        self.total_rewards = None
+        self.value_loss = None
         self.entropy_coefficient = entropy_coefficient
-        self.value_estimator = ValueEstimator(env, critic_learning_rate, value_coefficient)
+        self.value_estimator = ValueFunctionEstimator(env, critic_learning_rate, value_coefficient, clip_grads=clip_grads)
 
         if sampler_cls is None:
             sampler_cls = A2CMASampler
         if sampler_args is None:
             sampler_args = dict()
         self.sampler = sampler_cls(self, **sampler_args)
-        self.init_opt()
 
     def start_worker(self):
         self.sampler.start_worker()
@@ -92,7 +95,7 @@ class A2CMABase(RLAlgorithm):
             sess.run(tf.initialize_all_variables())
             self.start_worker()
             start_time = time.time()
-            for itr in range(self.start_itr, self.n_itr):
+            for itr in range(self.start_itr, self.n_itr + 1):
                 itr_start_time = time.time()
                 with logger.prefix('itr #%d | ' % itr):
                     logger.log("Obtaining samples...")
@@ -124,12 +127,14 @@ class A2CMABase(RLAlgorithm):
                             input("Plotting evaluation run: Press Enter to " "continue...")
         self.shutdown_worker()
 
-    def log_summary(self, itr, loss, avg_rewards, total_rewards):
+    def log_summary(self, itr, actor_loss, critic_loss, entropy_loss, avg_rewards, total_rewards):
         # Write TF Summaries
         sess = tf.get_default_session()
-        summary = sess.run(self.write_op, feed_dict={self.s_loss: loss,
-                                                     self.s_avg_rewards: avg_rewards,
-                                                     self.s_total_rewards: total_rewards})
+        summary = sess.run(self.write_op, feed_dict={self.actor_loss: actor_loss,
+                                                     self.critic_loss: critic_loss,
+                                                     self.entropy_loss: entropy_loss,
+                                                     self.avg_rewards: avg_rewards,
+                                                     self.total_rewards: total_rewards})
         self.writer.add_summary(summary, itr)
         self.writer.flush()
 

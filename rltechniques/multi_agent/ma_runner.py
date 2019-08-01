@@ -143,6 +143,6 @@ class Runner(object):
                          max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
                          discount=self.args.discount, ma_mode=self.args.control,
                          actor_learning_rate=self.args.policy_lr, critic_learning_rate=self.args.qfunc_lr,
-                         value_coefficient=0.5, entropy_coefficient=0.01)
+                         value_coefficient=0.5, entropy_coefficient=0.01, clip_grads=0.5)
 
         return algo

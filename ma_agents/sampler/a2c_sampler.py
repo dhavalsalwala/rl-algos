@@ -5,6 +5,7 @@ from rllab.sampler import parallel_sampler, ma_sampler
 from sandbox.rocky.tf.samplers.batch_ma_sampler import BatchMASampler
 import itertools
 from rllab.misc import logger
+import tensorflow as tf
 
 
 class A2CMASampler(BatchMASampler):
@@ -35,7 +36,7 @@ class A2CMASampler(BatchMASampler):
     def get_target_returns(self, rewards, done, value_next):
         returns = np.append(np.zeros_like(rewards), np.array([value_next]), axis=-1)
         for t in reversed(range(rewards.shape[0])):
-            returns[t] = rewards[t] + self.algo.discount * returns[t + 1] * (1 - done[t])
+            returns[t] = rewards[t] + self.algo.discount * returns[t + 1] * (1. - done[t])
         return returns[:-1]
 
     @overrides
@@ -72,9 +73,8 @@ class A2CMASampler(BatchMASampler):
         un_discounted_returns = [sum(path["rewards"]) for path in paths]
 
         ent = np.mean(self.algo.policy.distribution.entropy(samples_data['agent_info']))
-
         logger.log("Optimising critic function...")
-        value_loss = self.algo.value_estimator.update(samples_data['observations'], samples_data['td_target'])
+        self.algo.value_loss = self.algo.value_estimator.update(samples_data['observations'], samples_data['td_target'])
 
         logger.record_tabular('Iteration', itr)
         logger.record_tabular('NofTrajectories', no_of_trajectories)
@@ -85,7 +85,7 @@ class A2CMASampler(BatchMASampler):
         logger.record_tabular('Entropy', ent)
         logger.record_tabular('Perplexity', np.exp(ent))
         logger.record_tabular('StdReturn', np.std(un_discounted_returns))
-        logger.record_tabular("ValueLoss", value_loss)
+        logger.record_tabular("ValueLoss", self.algo.value_loss)
 
         return samples_data
 
