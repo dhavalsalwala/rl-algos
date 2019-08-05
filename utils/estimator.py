@@ -245,6 +245,7 @@ class DQNNetwork:
         self.memory = Memory(100000)
         self.q_estimator = self.build()
         self.target_estimator = self.build()
+        self.learning_step = 0
         self.MIN_EPSILON = 0.01
         self.MAX_EPSILON = 1
         self.epsilon = 0.5
@@ -269,10 +270,12 @@ class DQNNetwork:
             action = random.randrange(self.nA)
         return action
 
-    def replay(self, decay_step, batch_size=64, epochs=1, verbose=0):
+    def replay(self, batch_size=64, epochs=1, verbose=0):
+
+        self.learning_step += 1
 
         # Update Target neural network
-        if decay_step % self.target_network_update_freq == 0:
+        if self.learning_step % self.target_network_update_freq == 0:
             self.update_target_weights()
 
         mini_batch = self.memory.sample(self.batch_size)

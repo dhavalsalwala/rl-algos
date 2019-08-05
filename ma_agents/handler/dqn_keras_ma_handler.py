@@ -89,7 +89,6 @@ class BatchMADQNKERAS(RLAlgorithm):
         self.run_random_exp()
 
         start_time = time.time()
-        total_time_step = 0
         for itr in range(self.start_itr, self.n_itr + 1):
             itr_start_time = time.time()
 
@@ -106,8 +105,6 @@ class BatchMADQNKERAS(RLAlgorithm):
                 observations = self.env.reset()
                 logger.log("Running trajectories, obtaining samples and optimizing Q network...")
                 for time_step in range(self.max_path_length):
-
-                    total_time_step += 1
 
                     # render environment
                     if self.render:
@@ -138,7 +135,7 @@ class BatchMADQNKERAS(RLAlgorithm):
                                                                  next_observations[agent_index], done[agent_index])
 
                         # Replay and train memories
-                        history = self.networks[agent_index].replay(total_time_step)
+                        history = self.networks[agent_index].replay()
                         step_losses[agent_index] += history.history["loss"][0]
 
                     observations = next_observations
@@ -154,7 +151,7 @@ class BatchMADQNKERAS(RLAlgorithm):
                 logger.log("Logging statistics...")
                 self.log_statistics(itr, time_step + 1)
 
-                if True:
+                if itr % self.save_param_update == 0:
                     logger.log("Saving snapshot...")
                     params = self.get_itr_snapshot(itr)
                     logger.save_itr_params(itr, params)
@@ -166,12 +163,14 @@ class BatchMADQNKERAS(RLAlgorithm):
 
     def log_statistics(self, itr, total_steps):
 
-        rewards = np.sum(np.array(self.stats.episode_rewards[itr]), axis=0) / total_steps
+        rewards = np.sum(np.array(self.stats.episode_rewards[itr]), axis=0)
+        per_step_rewards = rewards / total_steps
         loss = np.sum(np.array(self.stats.episode_losses[itr]), axis=0) / total_steps
         logger.record_tabular('Iteration', itr)
         logger.record_tabular('NofTrajectories', total_steps)
         logger.record_tabular('Epsilon', np.array(self.stats.episode_epsilon[itr]))
-        logger.record_tabular('Return', rewards)
+        logger.record_tabular('PerStepReturn', per_step_rewards)
+        logger.record_tabular('TotalReturn', rewards)
         logger.record_tabular('MaxReturn', np.max(rewards))
         logger.record_tabular('MinReturn', np.min(rewards))
         logger.record_tabular("Loss", loss)
