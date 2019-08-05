@@ -5,7 +5,6 @@ import numpy as np
 import rllab.plotter as plotter
 from rllab.algos.base import RLAlgorithm
 from rllab.misc import logger
-from sandbox.rocky.tf.policies.base import Policy
 
 
 class BatchMADQNKERAS(RLAlgorithm):
@@ -21,9 +20,6 @@ class BatchMADQNKERAS(RLAlgorithm):
         """
         :param env: Environment
         :param policy: Policy
-        :type policy: Policy
-        :param scope: Scope for identifying the algorithm. Must be specified if running multiple algorithms
-        simultaneously, each using different environments and policies
         :param n_itr: Number of iterations.
         :param start_itr: Starting iteration.
         :param batch_size: Number of samples per iteration.
@@ -31,7 +27,6 @@ class BatchMADQNKERAS(RLAlgorithm):
         :param discount: Discount.
         :param plot: Plot evaluation run after each iteration.
         :param pause_for_plot: Whether to pause before contiuing when plotting.
-        :param store_paths: Whether to save all paths data to the snapshot.
         :return:
         """
         self.env = env
@@ -39,12 +34,10 @@ class BatchMADQNKERAS(RLAlgorithm):
         self.nA = env.action_space[0].n
         self.networks = networks
         self.random_seed = 2
-        self.scope = scope
         self.n_itr = n_itr
         self.start_itr = start_itr
         self.batch_size = batch_size
         self.max_path_length = max_path_length
-        self.plot = plot
         self.max_epsilon = max_epsilon
         self.render = False
         self.min_epsilon = min_epsilon
