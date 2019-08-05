@@ -116,6 +116,10 @@ class BatchMADQN(RLAlgorithm):
                         samples_data = self.process_samples(itr, paths)
                         self.optimize_policy(itr, samples_data)
 
+                        if total_time_step % self.target_network_update == 0:
+                            logger.log("Copying weights to target Q network...")
+                            self.target_policy.set_param_values(self.policy.get_param_values())
+
                         p_bar.inc(time_step + 1)
                         if self.sampler.done:
                             break
@@ -124,10 +128,6 @@ class BatchMADQN(RLAlgorithm):
                     self.sampler.done = True
                     self.log_statistics(itr, time_step+1)
                     logger.log("Logging statistics...")
-
-                    if total_time_step % self.target_network_update == 0:
-                        logger.log("Copying weights to target Q network...")
-                        self.target_policy.set_param_values(self.policy.get_param_values())
 
                     logger.log("Logging diagnostics...")
                     self.log_diagnostics(paths)
