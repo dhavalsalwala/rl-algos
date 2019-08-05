@@ -17,7 +17,7 @@ from sandbox.rocky.tf.policies.gaussian_lstm_policy import GaussianLSTMPolicy
 from sandbox.rocky.tf.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from sandbox.rocky.tf.spaces.box import Box
 from sandbox.rocky.tf.spaces.discrete import Discrete
-from ma_agents.network.dqn_network import DQNNetwork
+from utils.estimator import DQNNetwork
 from ma_agents.a2c_agent import MAA2C
 from ma_agents.dqn_agent import MADQN
 from ma_agents.dqn_agent_keras import MADQNKeras
