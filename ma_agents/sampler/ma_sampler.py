@@ -119,63 +119,52 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
             next_observations=tensor_utils.stack_tensor_list(next_observations[i]),
             actions=np.reshape(tensor_utils.stack_tensor_list(actions[i]), (-1, env.action_space.n)),
             rewards=tensor_utils.stack_tensor_list(rewards[i]),
-            done=tensor_utils.stack_tensor_list(done_list[i]),) for i in range(n_agents)
+            done=tensor_utils.stack_tensor_list(done_list[i]), ) for i in range(n_agents)
     ]
 
 
-def dec_roll_out_once(env, agents, sampler, max_path_length, animated=False, speedup=1):
-    """Decentralized roll out"""
+def dec_roll_out_a2c(env, agents, max_path_length=np.inf, animated=False, speedup=1):
+    """Decentralized rollout"""
     n_agents = len(env.agents)
-
-    if sampler.done:
-        sampler.done = False
-        observation_list = env.reset()
-        assert len(observation_list) == n_agents, "{} != {}".format(len(observation_list), n_agents)
-        agents.reset(dones=[True for _ in range(n_agents)])
-    else:
-        observation_list = sampler.old_observation_list
-
-    if animated:
-        env.render()
-
     observations = [[] for _ in range(n_agents)]
     next_observations = [[] for _ in range(n_agents)]
+    done_list = [[] for _ in range(n_agents)]
     actions = [[] for _ in range(n_agents)]
     rewards = [[] for _ in range(n_agents)]
-    done_list = [[] for _ in range(n_agents)]
-    agent_info = [[] for _ in range(n_agents)]
-    env_info_list = [[] for _ in range(n_agents)]
-
-    action_list, agent_info_list = agents.get_actions(observation_list)
-    agent_info_list = tensor_utils.split_tensor_dict_list(agent_info_list)
-
-    # For each agent
-    for index, observation in enumerate(observation_list):
-        observations[index].append(observation)
-        actions[index].append(env.action_space.flatten(action_list[index]))
-        if agent_info_list is None:
-            agent_info[index].append({})
-        else:
-            agent_info[index].append(agent_info_list[index])
-
-    next_observation_list, reward_list, done, env_info = env.step(np.asarray(action_list))
-
-    # For each agent
-    for index, reward in enumerate(reward_list):
-        next_observations[index].append(next_observation_list[index])
-        rewards[index].append(reward)
-        sampler.algo.total_episodic_rewards[index].append(reward)
-        env_info_list[index].append(env_info)
-        done_list[index].append(done)
-
-    sampler.old_observation_list = next_observation_list
-    sampler.done = done
-
+    agent_infos = [[] for _ in range(n_agents)]
+    env_infos = [[] for _ in range(n_agents)]
+    olist = env.reset()
+    assert len(olist) == n_agents, "{} != {}".format(len(olist), n_agents)
+    agents.reset(dones=[True for _ in range(n_agents)])
+    path_length = 0
     if animated:
         env.render()
-        time_step = 0.05
-        time.sleep(time_step / speedup)
+    while path_length < max_path_length:
+        alist, agent_info_list = agents.get_actions(olist)
+        agent_info_list = tensor_utils.split_tensor_dict_list(agent_info_list)
+        # For each agent
+        for i, o in enumerate(olist):
+            observations[i].append(o)
+            actions[i].append(env.action_space.flatten(alist[i]))
+            if agent_info_list is None:
+                agent_infos[i].append({})
+            else:
+                agent_infos[i].append(agent_info_list[i])
 
+        next_olist, rlist, d, env_info = env.step(np.asarray(alist))
+        for i, (r, n_o) in enumerate(zip(rlist, next_olist)):
+            next_observations[i].append(n_o)
+            done_list[i].append(d)
+            rewards[i].append(r)
+            env_infos[i].append(env_info)
+        path_length += 1
+        if d:
+            break
+        olist = next_olist
+        if animated:
+            env.render()
+            timestep = 0.05
+            time.sleep(timestep / speedup)
     if animated:
         env.render()
 
@@ -183,11 +172,11 @@ def dec_roll_out_once(env, agents, sampler, max_path_length, animated=False, spe
         dict(
             observations=tensor_utils.stack_tensor_list(observations[i]),
             next_observations=tensor_utils.stack_tensor_list(next_observations[i]),
-            actions=np.reshape(tensor_utils.stack_tensor_list(actions[i]), (-1, env.action_space.n)),
+            done_list=tensor_utils.stack_tensor_list(done_list[i]),
+            actions=tensor_utils.stack_tensor_list(actions[i]),
             rewards=tensor_utils.stack_tensor_list(rewards[i]),
-            done=tensor_utils.stack_tensor_list(done_list[i]),
-            agent_info=tensor_utils.stack_tensor_dict_list(agent_info[i]),
-            env_info=tensor_utils.stack_tensor_dict_list(env_info_list[i]), ) for i in range(n_agents)
+            agent_info=tensor_utils.stack_tensor_dict_list(agent_infos[i]),
+            env_info=tensor_utils.stack_tensor_dict_list(env_infos[i]), ) for i in range(n_agents)
     ]
 
 
@@ -210,10 +199,10 @@ def _worker_collect_path_one_env(G, max_path_length, ma_mode, sampler, scope=Non
         raise NotImplementedError("incorrect rollout type")
 
 
-def _worker_collect_path_one_env_a2c(G, max_path_length, ma_mode, sampler, scope=None):
+def _worker_collect_path_one_env_a2c(G, max_path_length, ma_mode, scope=None):
     G = _get_scoped_G(G, scope)
     if ma_mode == 'decentralized':
-        paths = dec_roll_out_once(G.env, G.policy, sampler, max_path_length)
+        paths = dec_roll_out_a2c(G.env, G.policy, max_path_length)
         lengths = [len(path['rewards']) for path in paths]
         return paths, sum(lengths)
     else:
@@ -232,8 +221,8 @@ def sample_paths(policy_params, max_samples, ma_mode, sampler, max_path_length=n
                                       args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=False)
 
 
-def sample_paths_a2c(policy_params, max_samples, ma_mode, sampler, max_path_length=np.inf, env_params=None,
-                 scope=None):
+def sample_paths_a2c(policy_params, max_samples, ma_mode, max_path_length=np.inf, env_params=None,
+                     scope=None):
     singleton_pool.run_each(_worker_set_policy_params,
                             [(policy_params, ma_mode, scope)] * singleton_pool.n_parallel)
     if env_params is not None:
@@ -241,10 +230,10 @@ def sample_paths_a2c(policy_params, max_samples, ma_mode, sampler, max_path_leng
                                 [(env_params, scope)] * singleton_pool.n_parallel)
 
     return singleton_pool.run_collect(_worker_collect_path_one_env_a2c, threshold=max_samples,
-                                      args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=False)
+                                      args=(max_path_length, ma_mode, scope), show_prog_bar=True)
 
 
 def sample_random_paths(max_samples, ma_mode, sampler, max_path_length=np.inf,
                         scope=None):
     singleton_pool.run_collect(_worker_collect_path_random_one_env, threshold=max_samples,
-                                      args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=True)
+                               args=(max_path_length, ma_mode, sampler, scope), show_prog_bar=True)

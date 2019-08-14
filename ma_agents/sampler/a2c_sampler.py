@@ -4,7 +4,8 @@ import numpy as np
 from rllab.misc import logger
 from rllab.misc import tensor_utils
 from rllab.misc.overrides import overrides
-from rllab.sampler import parallel_sampler, ma_sampler
+from rllab.sampler import parallel_sampler
+from ma_agents.sampler import ma_sampler
 from sandbox.rocky.tf.samplers.batch_ma_sampler import BatchMASampler
 
 
