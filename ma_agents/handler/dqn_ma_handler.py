@@ -7,7 +7,7 @@ from rllab.algos.base import RLAlgorithm
 from rllab.misc import logger
 from rllab.sampler.stateful_pool import ProgBarCounter
 from sandbox.rocky.tf.policies.base import Policy
-from ma_agents.sampler.exp_replay_sampler import ExpReplayMASampler
+from ma_agents.sampler.dqn_replay_sampler import ExpReplayMASampler
 
 
 class BatchMADQN(RLAlgorithm):

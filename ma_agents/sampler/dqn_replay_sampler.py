@@ -7,7 +7,7 @@ from rllab.misc.overrides import overrides
 from rllab.sampler import parallel_sampler
 from sandbox.rocky.tf.samplers.batch_ma_sampler import BatchMASampler
 
-from ma_agents.sampler import ma_sampler
+from ma_agents.sampler import base_sampler
 
 
 class ExpReplayMASampler(BatchMASampler):
@@ -30,7 +30,7 @@ class ExpReplayMASampler(BatchMASampler):
         return random.sample(self.replay_memory, n)
 
     def obtain_random_samples(self, pre_trained_size):
-        ma_sampler.sample_random_paths(
+        base_sampler.sample_random_paths(
             max_samples=pre_trained_size,
             sampler=self,
             max_path_length=self.algo.max_path_length,
@@ -45,7 +45,7 @@ class ExpReplayMASampler(BatchMASampler):
         else:
             cur_env_params = None
 
-        paths = ma_sampler.sample_paths(
+        paths = base_sampler.sample_paths(
             policy_params=cur_policy_params,
             env_params=cur_env_params,
             max_samples=self.algo.batch_size,

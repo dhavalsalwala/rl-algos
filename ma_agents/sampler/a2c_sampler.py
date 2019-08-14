@@ -5,7 +5,7 @@ from rllab.misc import logger
 from rllab.misc import tensor_utils
 from rllab.misc.overrides import overrides
 from rllab.sampler import parallel_sampler
-from ma_agents.sampler import ma_sampler
+from ma_agents.sampler import base_sampler
 from sandbox.rocky.tf.samplers.batch_ma_sampler import BatchMASampler
 
 
@@ -21,7 +21,7 @@ class A2CMASampler(BatchMASampler):
             cur_env_params = self.algo.env.get_param_values()
         else:
             cur_env_params = None
-        paths = ma_sampler.sample_paths_a2c(
+        paths = base_sampler.sample_paths_a2c(
             policy_params=cur_policy_params,
             env_params=cur_env_params,
             max_samples=self.algo.max_path_length*len(self.algo.env.agents),
