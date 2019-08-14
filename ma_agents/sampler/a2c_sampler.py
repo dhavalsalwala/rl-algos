@@ -1,11 +1,11 @@
+import itertools
+
 import numpy as np
+from rllab.misc import logger
 from rllab.misc import tensor_utils
 from rllab.misc.overrides import overrides
 from rllab.sampler import parallel_sampler, ma_sampler
 from sandbox.rocky.tf.samplers.batch_ma_sampler import BatchMASampler
-import itertools
-from rllab.misc import logger
-import tensorflow as tf
 
 
 class A2CMASampler(BatchMASampler):
@@ -23,7 +23,7 @@ class A2CMASampler(BatchMASampler):
         paths = ma_sampler.sample_paths_a2c(
             policy_params=cur_policy_params,
             env_params=cur_env_params,
-            max_samples=self.algo.batch_size,
+            max_samples=self.algo.max_path_length*len(self.algo.env.agents),
             max_path_length=self.algo.max_path_length,
             ma_mode=self.algo.ma_mode,
             scope=self.algo.scope,)
@@ -43,21 +43,32 @@ class A2CMASampler(BatchMASampler):
     def process_samples(self, itr, paths):
 
         paths = list(itertools.chain.from_iterable(paths))
-        no_of_trajectories = paths[0]['observations'].shape[0]
 
         td_target = []
         td_error_advantage = []
 
         for agent in paths:
 
-            value_next = self.algo.value_estimator.predict([agent['next_observations'][-1]])
+            R = 0
+            if agent['done_list'][-1]:
+                R = self.algo.value_estimator.predict([agent['next_observations'][-1]])
+
+            # value_next = self.algo.value_estimator.predict([agent['next_observations'][-1]])
             values = self.algo.value_estimator.predict(agent['observations'])
 
-            td_target_tmp = self.get_target_returns(agent['rewards'], agent['done_list'], value_next)
-            td_error_advantage_tmp = td_target_tmp - values
+            n = len(agent['observations'])
+            td = np.zeros(n)
+            adv = np.zeros(n)
+            for i in range(n - 1, -1, -1):
+                R = agent['rewards'][i] + self.algo.discount * R
+                td[i] = R
+                adv[i] = R - values[i]
 
-            td_target.append(td_target_tmp)
-            td_error_advantage.append(td_error_advantage_tmp)
+            # td_target_tmp = self.get_target_returns(agent['rewards'], agent['done_list'], value_next)
+            # td_error_advantage_tmp = td_target_tmp - values
+
+            td_target.append(td)
+            td_error_advantage.append(adv)
 
         samples_data = dict(
             observations=tensor_utils.concat_tensor_list([path["observations"] for path in paths]),
@@ -65,8 +76,8 @@ class A2CMASampler(BatchMASampler):
             rewards=tensor_utils.concat_tensor_list([path["rewards"] for path in paths]),
             env_infos=tensor_utils.concat_tensor_dict_list([path["env_info"] for path in paths]),
             agent_info=tensor_utils.concat_tensor_dict_list([path["agent_info"] for path in paths]),
-            td_target=np.concatenate(td_target),
-            td_error=np.concatenate(td_error_advantage),
+            td_target=tensor_utils.concat_tensor_list(td_target),
+            td_error=tensor_utils.concat_tensor_list(td_error_advantage),
             paths=paths,
         )
 
@@ -77,7 +88,7 @@ class A2CMASampler(BatchMASampler):
         self.algo.value_loss = self.algo.value_estimator.update(samples_data['observations'], samples_data['td_target'])
 
         logger.record_tabular('Iteration', itr)
-        logger.record_tabular('NofTrajectories', no_of_trajectories)
+        logger.record_tabular('NofTrajectories', samples_data['observations'].shape[0])
         logger.record_tabular('AverageReturn', np.mean(un_discounted_returns))
         logger.record_tabular('TotalReturn', np.sum(un_discounted_returns))
         logger.record_tabular('MaxReturn', np.max(un_discounted_returns))

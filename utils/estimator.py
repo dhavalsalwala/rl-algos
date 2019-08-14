@@ -1,5 +1,5 @@
 import random
-
+from rllab.core.serializable import Serializable
 import numpy as np
 import tensorflow as tf
 from keras.layers import Dense
@@ -192,12 +192,13 @@ class ValueEstimator2:
         return self.model.get_weights()
 
 
-class ValueFunctionEstimator:
+class ValueFunctionEstimator(Serializable):
     """
     Critic Value Function Estimator.
     """
 
     def __init__(self, env, learning_rate=0.0001, value_coefficient=0.5, clip_grads=None, scope="value_estimator"):
+        Serializable.quick_init(self, locals())
         with tf.variable_scope(scope):
             obs_shape = env.observation_space.shape
             self.observations = tf.placeholder(tf.float32, (None, obs_shape[0], obs_shape[1], obs_shape[2]), name='observations')

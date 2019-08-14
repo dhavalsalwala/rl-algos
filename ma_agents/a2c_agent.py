@@ -66,13 +66,13 @@ class MAA2C(A2CMABase, Serializable):
         mean_kl = tf.reduce_mean(kl)
         max_kl = tf.reduce_max(kl)
 
-        # log_likelihood_prob = dist.log_likelihood_sym(actions, dist_info_vars)
-        # actor_loss = -tf.reduce_mean(log_likelihood_prob * td_error_advantage)
+        log_likelihood_prob = dist.log_likelihood_sym(actions, dist_info_vars)
+        actor_loss = -tf.reduce_mean(log_likelihood_prob * td_error_advantage)
 
-        neg_log_policy = -tf.log(tf.clip_by_value(dist_info_vars['prob'], 1e-7, 1))
-        actor_loss = tf.reduce_mean(tf.reduce_sum(neg_log_policy * actions, reduction_indices=1) * td_error_advantage)
-        entropy_loss = tf.reduce_mean(tf.reduce_sum(dist_info_vars['prob'] * neg_log_policy, reduction_indices=1))
-        # entropy_loss = tf.reduce_mean(self.policy.distribution.entropy_sym(dist_info_vars))
+        # neg_log_policy = -tf.log(tf.clip_by_value(dist_info_vars['prob'], 1e-7, 1))
+        # actor_loss = tf.reduce_mean(tf.reduce_sum(neg_log_policy * actions, reduction_indices=1) * td_error_advantage)
+        # entropy_loss = tf.reduce_mean(tf.reduce_sum(dist_info_vars['prob'] * neg_log_policy, reduction_indices=1))
+        entropy_loss = tf.reduce_mean(self.policy.distribution.entropy_sym(dist_info_vars))
 
         total_loss = actor_loss - (entropy_loss * entropy_coefficient)
         input_list_actor = [observations, actions, td_error_advantage] + state_info_vars_list
