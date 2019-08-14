@@ -86,7 +86,7 @@ class ReinforceMASampler(BatchMASampler):
         logger.log("fitted")
 
         logger.record_tabular('Iteration', itr)
-        logger.record_tabular('NofTrajectories', len(paths))
+        logger.record_tabular('NofTrajectories', samples_data['observations'].shape[0])
         logger.record_tabular('AverageDiscountedReturn',
                               average_discounted_return)
         self.algo.avg_rewards = np.mean(un_discounted_returns)

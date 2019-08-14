@@ -17,11 +17,11 @@ from sandbox.rocky.tf.policies.gaussian_lstm_policy import GaussianLSTMPolicy
 from sandbox.rocky.tf.policies.gaussian_mlp_policy import GaussianMLPPolicy
 from sandbox.rocky.tf.spaces.box import Box
 from sandbox.rocky.tf.spaces.discrete import Discrete
-from utils.estimator import DQNNetwork
+
 from ma_agents.a2c_agent import MAA2C
 from ma_agents.dqn_agent import MADQN
-from ma_agents.dqn_agent_keras import MADQNKeras
 from ma_agents.reinforce_agent import MAReinforce
+from utils.estimator import DQNNetwork
 from . import *
 
 
@@ -50,10 +50,9 @@ class Runner(object):
         if isinstance(args, dict):
             args = tonamedtuple(args)
 
-        if env.spec is not None:
-            env = RLLabEnv(env, ma_mode=args.control)
-            # Multi-agent wrapper
-            env = MATfEnv(env)
+        # Multi-agent wrapper
+        env = RLLabEnv(env, ma_mode=args.control)
+        env = MATfEnv(env)
 
         # Policy
         if args.recurrent:
@@ -236,7 +235,7 @@ class Runner(object):
                                discount=self.args.discount, gae_lambda=self.args.gae_lambda,
                                step_size=self.args.step_size, ma_mode=self.args.control, save_param_update=self.args.save_param_update)
 
-        elif self.args.algo == 'tfdqn':
+        elif self.args.algo == 'dqn':
             algo = MADQN(env=env, networks=policy, plot=False,
                          batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
                          max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
@@ -244,19 +243,13 @@ class Runner(object):
                          pre_trained_size=self.args.replay_pre_trained_size, target_network_update=self.args.target_network_update,
                          save_param_update=self.args.save_param_update)
 
-        elif self.args.algo == 'krdqn':
-            algo = MADQNKeras(env=env, networks=policy, plot=False,
-                              batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
-                              max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
-                              pre_trained_size=self.args.replay_pre_trained_size,
-                              save_param_update=self.args.save_param_update)
-
         elif self.args.algo == 'a2c':
             algo = MAA2C(env=env, policy_or_policies=policy, plot=False, baseline_or_baselines=baseline,
                          batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
                          max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
                          discount=self.args.discount, ma_mode=self.args.control,
                          actor_learning_rate=self.args.policy_lr, critic_learning_rate=self.args.qfunc_lr,
-                         value_coefficient=0.5, entropy_coefficient=0.01, clip_grads=0.5)
+                         value_coefficient=0.5, entropy_coefficient=0.01, clip_grads=0.5,
+                         save_param_update=self.args.save_param_update)
 
         return algo
