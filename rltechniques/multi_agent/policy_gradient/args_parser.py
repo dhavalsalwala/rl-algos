@@ -28,10 +28,9 @@ class ARGParser(object):
         parser = argparse.ArgumentParser(description='Policy Gradient Argument Parser')
 
         getattr(self, "set_param_values")(self._env_options, **kwargs)
-        self.args = None
 
     @staticmethod
-    def update_argument_parser(self, parser, options, **kwargs):
+    def update_argument_parser(parser, options, **kwargs):
         kwargs = kwargs.copy()
         for (name, typ, default, desc) in options:
             flag = "--" + name
@@ -80,10 +79,10 @@ class ARGParser(object):
         parser.add_argument('--policy_hidden', type=comma_sep_ints, default='512')
 
         parser.add_argument('--conv', type=bool, default=True)
-        parser.add_argument('--conv_filters', type=comma_sep_ints, default='3,3,3')
+        parser.add_argument('--conv_filters', type=comma_sep_ints, default='8,4,3')
         parser.add_argument('--conv_channels', type=comma_sep_ints, default='32,64,64')
-        parser.add_argument('--conv_strides', type=comma_sep_ints, default='1,1,1')
-        parser.add_argument('--conv_pads', type=str, default='SAME')
+        parser.add_argument('--conv_strides', type=comma_sep_ints, default='4,2,1')
+        parser.add_argument('--conv_pads', type=str, default='VALID')
         parser.add_argument('--batch_normalization', type=bool, default=True)
 
         parser.add_argument('--min_std', type=float, default=1e-6)

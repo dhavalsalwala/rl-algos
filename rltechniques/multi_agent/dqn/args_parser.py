@@ -28,10 +28,9 @@ class ARGParser(object):
         parser = argparse.ArgumentParser(description='DQN Argument Parser')
 
         getattr(self, "set_param_values")(self._env_options, **kwargs)
-        self.args = None
 
     @staticmethod
-    def update_argument_parser(self, parser, options, **kwargs):
+    def update_argument_parser(parser, options, **kwargs):
         kwargs = kwargs.copy()
         for (name, typ, default, desc) in options:
             flag = "--" + name
