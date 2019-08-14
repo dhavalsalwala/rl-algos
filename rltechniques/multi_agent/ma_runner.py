@@ -48,7 +48,7 @@ class Runner(object):
     def parse_env_args(self, env, args):
 
         if isinstance(args, dict):
-            args = tonamedtuple(args)
+            args = to_named_tuple(args)
 
         # Multi-agent wrapper
         env = RLLabEnv(env, ma_mode=args.control)
