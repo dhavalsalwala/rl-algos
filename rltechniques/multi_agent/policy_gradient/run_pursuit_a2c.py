@@ -10,7 +10,7 @@ ENV_OPTIONS = [
     ('n_evaders', int, 30, ''),
     ('n_pursuers', int, 8, ''),
     ('obs_range', int, 10, ''),
-    ('map_size', str, '10,10', ''),
+    ('map_size', str, '16,16', ''),
     ('map_type', str, 'rectangle', ''),
     ('n_catch', int, 2, ''),
     ('urgency', float, 0.0, ''),

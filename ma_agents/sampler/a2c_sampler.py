@@ -13,10 +13,7 @@ class A2CMASampler(BatchMASampler):
 
     @overrides
     def obtain_samples(self, itr):
-        if self.algo.ma_mode == 'concurrent':
-            cur_policy_params = [policy.get_param_values() for policy in self.algo.policies]
-        else:
-            cur_policy_params = self.algo.policy.get_param_values()
+        cur_policy_params = self.algo.policy.get_param_values()
         if hasattr(self.algo.env, "get_param_values"):
             cur_env_params = self.algo.env.get_param_values()
         else:

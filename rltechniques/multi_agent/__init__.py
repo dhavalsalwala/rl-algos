@@ -20,6 +20,19 @@ def comma_sep_ints(s):
         return []
 
 
+def update_argument_parser(parser, options, **kwargs):
+    kwargs = kwargs.copy()
+    for (name, typ, default, desc) in options:
+        flag = "--" + name
+        if flag in parser._option_string_actions.keys():
+            print("warning: already have option %s. skipping" % name)
+        else:
+            parser.add_argument(flag, type=typ, default=kwargs.pop(name, default), help=desc or
+                                                                                            " ")
+    if kwargs:
+        raise ValueError("options %s ignored" % kwargs)
+
+
 class Visualizer(PolicyLoad):
 
     def __init__(self, *args, **kwargs):

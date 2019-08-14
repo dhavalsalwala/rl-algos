@@ -3,7 +3,6 @@ import ast
 import datetime
 import sys
 import uuid
-
 import dateutil
 import dateutil.tz
 
@@ -29,19 +28,6 @@ class ARGParser(object):
 
         getattr(self, "set_param_values")(self._env_options, **kwargs)
 
-    @staticmethod
-    def update_argument_parser(parser, options, **kwargs):
-        kwargs = kwargs.copy()
-        for (name, typ, default, desc) in options:
-            flag = "--" + name
-            if flag in parser._option_string_actions.keys():
-                print("warning: already have option %s. skipping" % name)
-            else:
-                parser.add_argument(flag, type=typ, default=kwargs.pop(name, default), help=desc or
-                                                                                            " ")
-        if kwargs:
-            raise ValueError("options %s ignored" % kwargs)
-
     def set_param_values(self, env_options, **kwargs):
         now = datetime.datetime.now(dateutil.tz.tzlocal())
         rand_id = str(uuid.uuid4())[:5]
@@ -50,8 +36,8 @@ class ARGParser(object):
 
         parser = argparse.ArgumentParser()
         parser.add_argument('--exp_name', type=str, default=default_exp_name)
-        self.update_argument_parser(parser, self.DEFAULT_OPTS)
-        self.update_argument_parser(parser, self.DEFAULT_POLICY_OPTS)
+        update_argument_parser(parser, self.DEFAULT_OPTS)
+        update_argument_parser(parser, self.DEFAULT_POLICY_OPTS)
 
         parser.add_argument(
             '--algo', type=str, default='',
@@ -79,9 +65,9 @@ class ARGParser(object):
         parser.add_argument('--policy_hidden', type=comma_sep_ints, default='512')
 
         parser.add_argument('--conv', type=bool, default=True)
-        parser.add_argument('--conv_filters', type=comma_sep_ints, default='8,4,3')
-        parser.add_argument('--conv_channels', type=comma_sep_ints, default='32,64,64')
-        parser.add_argument('--conv_strides', type=comma_sep_ints, default='4,2,1')
+        parser.add_argument('--conv_filters', type=comma_sep_ints, default='4,3')
+        parser.add_argument('--conv_channels', type=comma_sep_ints, default='32,64')
+        parser.add_argument('--conv_strides', type=comma_sep_ints, default='2,1')
         parser.add_argument('--conv_pads', type=str, default='VALID')
         parser.add_argument('--batch_normalization', type=bool, default=True)
 
@@ -111,6 +97,6 @@ class ARGParser(object):
 
         parser.add_argument('--q_learning_flag', type=bool, default=True)
 
-        self.update_argument_parser(parser, env_options, **kwargs)
+        update_argument_parser(parser, env_options, **kwargs)
         self.args = parser.parse_known_args(
             [arg for arg in sys.argv[1:] if arg not in ('-h', '--help')])[0]
