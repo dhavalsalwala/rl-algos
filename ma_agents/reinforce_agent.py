@@ -5,7 +5,8 @@ from rllab.misc import ext
 from rllab.misc import logger
 from rllab.misc.overrides import overrides
 from sandbox.rocky.tf.misc import tensor_utils
-from sandbox.rocky.tf.optimizers.first_order_optimizer import FirstOrderOptimizer
+from utils.optimizer import FirstOrderOptimizerExt
+
 
 from ma_agents.handler.reinforce_ma_handler import ReinforceMABase
 
@@ -26,7 +27,7 @@ class MAReinforce(ReinforceMABase, Serializable):
                 optimizer_args = default_args
             else:
                 optimizer_args = dict(default_args, **optimizer_args)
-            optimizer = FirstOrderOptimizer(**optimizer_args)
+            optimizer = FirstOrderOptimizerExt(**optimizer_args)
         self.optimizer = optimizer
         self.opt_info = None
         super(MAReinforce, self).__init__(env=env, policy_or_policies=policy_or_policies,

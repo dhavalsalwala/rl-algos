@@ -2,7 +2,7 @@ import tensorflow as tf
 from rllab.core.serializable import Serializable
 from rllab.misc import ext
 from rllab.misc.overrides import overrides
-from sandbox.rocky.tf.optimizers.first_order_optimizer import FirstOrderOptimizer
+from utils.optimizer import FirstOrderOptimizerExt
 
 from ma_agents.handler.dqn_ma_handler import BatchMADQN
 
@@ -22,7 +22,7 @@ class MADQN(BatchMADQN, Serializable):
                 optimizer_args = default_args
             else:
                 optimizer_args = dict(default_args, **optimizer_args)
-            optimizer = FirstOrderOptimizer(**optimizer_args)
+            optimizer = FirstOrderOptimizerExt(**optimizer_args)
         self.optimizer = optimizer
         self.opt_info = None
         super(MADQN, self).__init__(env=env, **kwargs)

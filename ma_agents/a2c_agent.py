@@ -4,7 +4,7 @@ from rllab.misc import ext
 from rllab.misc import logger
 from rllab.misc.overrides import overrides
 from sandbox.rocky.tf.misc import tensor_utils
-from sandbox.rocky.tf.optimizers.first_order_optimizer import FirstOrderOptimizer
+from utils.optimizer import FirstOrderOptimizerExt
 import numpy as np
 from ma_agents.handler.a2c_ma_handler import A2CMABase
 
@@ -25,7 +25,7 @@ class MAA2C(A2CMABase, Serializable):
                 tf_optimizer_args=dict(learning_rate=7e-4, decay=0.99, epsilon=1e-5)
             )
             optimizer_args = dict(default_args, **{'clip_grads': self.clip_grads})
-            self.optimizer = FirstOrderOptimizer(**optimizer_args)
+            self.optimizer = FirstOrderOptimizerExt(**optimizer_args)
         self.opt_info = None
         self.init_opt()
 
