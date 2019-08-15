@@ -16,12 +16,11 @@ class MAReinforce(ReinforceMABase, Serializable):
     Multi-agent Vanilla Policy Gradient.
     """
 
-    def __init__(self, env, policy_or_policies, baseline_or_baselines, optimizer=None,
-                 optimizer_args=None, **kwargs):
+    def __init__(self, env, optimizer=None, optimizer_args=None, **kwargs):
         Serializable.quick_init(self, locals())
         if optimizer is None:
             default_args = dict(
-                batch_size=None,
+                batch_size=64,
                 max_epochs=1, )
             if optimizer_args is None:
                 optimizer_args = default_args
@@ -30,8 +29,7 @@ class MAReinforce(ReinforceMABase, Serializable):
             optimizer = FirstOrderOptimizerExt(**optimizer_args)
         self.optimizer = optimizer
         self.opt_info = None
-        super(MAReinforce, self).__init__(env=env, policy_or_policies=policy_or_policies,
-                                          baseline_or_baselines=baseline_or_baselines, **kwargs)
+        super(MAReinforce, self).__init__(env=env, **kwargs)
 
     @overrides
     def init_opt(self):

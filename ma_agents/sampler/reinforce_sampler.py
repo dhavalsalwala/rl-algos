@@ -89,10 +89,8 @@ class ReinforceMASampler(BatchMASampler):
         logger.record_tabular('NofTrajectories', samples_data['observations'].shape[0])
         logger.record_tabular('AverageDiscountedReturn',
                               average_discounted_return)
-        self.algo.avg_rewards = np.mean(un_discounted_returns)
-        logger.record_tabular('AverageReturn', self.algo.avg_rewards)
-        self.algo.total_rewards = np.sum(un_discounted_returns)
-        logger.record_tabular('TotalReturn', self.algo.total_rewards)
+        logger.record_tabular('AverageReturn', np.mean(un_discounted_returns))
+        logger.record_tabular('TotalReturn', np.sum(un_discounted_returns))
         logger.record_tabular('MaxReturn', np.max(un_discounted_returns))
         logger.record_tabular('MinReturn', np.min(un_discounted_returns))
         logger.record_tabular('ExplainedVariance', ev)

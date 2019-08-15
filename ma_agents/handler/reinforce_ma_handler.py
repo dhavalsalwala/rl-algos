@@ -13,7 +13,7 @@ class ReinforceMABase(RLAlgorithm):
                  start_itr=0, batch_size=5000, max_path_length=500, discount=0.99, gae_lambda=1,
                  plot=False, pause_for_plot=False, center_adv=True, positive_adv=False,
                  store_paths=False, whole_paths=True, fixed_horizon=False, sampler_cls=None,
-                 sampler_args=None, save_param_update=125, force_batch_sampler=True, **kwargs):
+                 sampler_args=None, save_param_update=300, force_batch_sampler=True, **kwargs):
         """
         :param env: Environment
         :param policy: Policy
@@ -114,7 +114,6 @@ class ReinforceMABase(RLAlgorithm):
                     logger.record_tabular('Time', time.time() - start_time)
                     logger.record_tabular('ItrTime', time.time() - itr_start_time)
                     logger.dump_tabular(with_prefix=False)
-                    self.log_summary(itr)
                     if self.plot:
                         self.update_plot()
                         if self.pause_for_plot:
