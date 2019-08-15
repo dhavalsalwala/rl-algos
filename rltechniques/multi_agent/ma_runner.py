@@ -105,11 +105,13 @@ class Runner(object):
                     q_network = CategoricalGRUPolicy(env_spec=env.spec,
                                                      feature_network=feature_network,
                                                      hidden_dim=int(args.policy_hidden[0]),
-                                                     name='q_network', state_include_action=False if args.conv else True)
+                                                     name='q_network',
+                                                     state_include_action=False if args.conv else True)
                     target_q_network = CategoricalGRUPolicy(env_spec=env.spec,
                                                             feature_network=feature_network,
                                                             hidden_dim=int(args.policy_hidden[0]),
-                                                            name='target_q_network', state_include_action=False if args.conv else True)
+                                                            name='target_q_network',
+                                                            state_include_action=False if args.conv else True)
                     policy = {'q_network': q_network, 'target_q_network': target_q_network}
                 else:
                     raise NotImplementedError(env.spec.observation_space)
@@ -233,14 +235,16 @@ class Runner(object):
                                batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
                                max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
                                discount=self.args.discount, gae_lambda=self.args.gae_lambda,
-                               step_size=self.args.step_size, ma_mode=self.args.control, save_param_update=self.args.save_param_update)
+                               step_size=self.args.step_size, ma_mode=self.args.control,
+                               save_param_update=self.args.save_param_update)
 
         elif self.args.algo == 'dqn':
             algo = MADQN(env=env, networks=policy, plot=False,
                          batch_size=self.args.batch_size, pause_for_plot=True, start_itr=start_itr,
                          max_path_length=self.args.max_path_length, n_itr=self.args.n_iter,
                          discount=self.args.discount, ma_mode=self.args.control,
-                         pre_trained_size=self.args.replay_pre_trained_size, target_network_update=self.args.target_network_update,
+                         pre_trained_size=self.args.replay_pre_trained_size,
+                         target_network_update=self.args.target_network_update,
                          save_param_update=self.args.save_param_update)
 
         elif self.args.algo == 'a2c':

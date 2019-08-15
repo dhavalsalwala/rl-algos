@@ -13,7 +13,7 @@ class ARGParser(object):
     DEFAULT_OPTS = [
         ('discount', float, 0.99, ''),
         ('gae_lambda', float, 0.99, ''),
-        ('n_iter', int, 25000, ''),
+        ('n_iter', int, 50000, ''),
     ]
 
     DEFAULT_POLICY_OPTS = [
@@ -43,8 +43,8 @@ class ARGParser(object):
             '--algo', type=str, default='',
             help='Add tf or th to the algo name to run tensorflow or theano version')
 
-        parser.add_argument('--max_path_length', type=int, default=256)
-        parser.add_argument('--batch_size', type=int, default=32)
+        parser.add_argument('--max_path_length', type=int, default=500)
+        parser.add_argument('--batch_size', type=int, default=12000)
         parser.add_argument('--n_parallel', type=int, default=1)
         parser.add_argument('--resume_from', type=str, default=None,
                             help='Name of the pickle file to resume experiment from.')
@@ -57,7 +57,7 @@ class ARGParser(object):
         parser.add_argument('--qfunc_lr', type=float, default=1e-3)
         parser.add_argument('--policy_lr', type=float, default=1e-4)
         parser.add_argument('--target_network_update', type=int, default=1000)
-        parser.add_argument('--save_param_update', type=int, default=125)
+        parser.add_argument('--save_param_update', type=int, default=200)
 
         parser.add_argument('--feature_net', type=str, default=None)
         parser.add_argument('--feature_output', type=int, default=16)
