@@ -5,11 +5,17 @@ This repository provides solutions to the most popular Reinforcement Learning al
 All code is written in Python 3 and uses RL environments from [OpenAI Gym](https://gym.openai.com/) and [MADRL](https://github.com/dhavalsalwala/MADRL). Advanced techniques use [Tensorflow](https://www.tensorflow.org/) and [Keras](https://keras.io/) for neural network implementations.
 
 #### Setup
-  - Follow the instructions at https://rllab.readthedocs.io/en/latest/user/installation.html to create python virtual environment. All the depdendenies are present in modules/MADRL/rllab/environment.yml. Please don't change them.
-  - Activate the virtual environment created in above step.
   - Perform a recursive clone of this repository
    
         git clone --recursive git@github.com:dhavalsalwala/rl-algos.git
+        
+  - Go to modules/MADRL/rllab and run following command. All the dependencies are defined in modules/MADRL/rllab/environment.yml. Please don't change them.
+  
+        ./scripts/setup_linux.sh
+         or
+        ./scripts/setup_osx.sh
+  
+  - Activate the virtual environment created in above step.
   
   - Add directories to PYTHONPATH
             
