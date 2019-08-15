@@ -7,8 +7,8 @@ from rltechniques.multi_agent.policy_gradient.args_parser import ARGParser
 from rltechniques.multi_agent.ma_runner import Runner
 
 ENV_OPTIONS = [
-    ('n_evaders', int, 30, ''),
-    ('n_pursuers', int, 8, ''),
+    ('n_evaders', int, 20, ''),
+    ('n_pursuers', int, 10, ''),
     ('obs_range', int, 10, ''),
     ('map_size', str, '16,16', ''),
     ('map_type', str, 'rectangle', ''),
