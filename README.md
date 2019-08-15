@@ -21,7 +21,9 @@ All code is written in Python 3 and uses RL environments from [OpenAI Gym](https
 
   #### Multi Agent RL  - [Go to Repo](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
   
-  - MA Deep Q Network, MA REINFORCE
+  - MA Deep Q Network
+  - MA REINFORCE
+  - MA Advantage Actor-Critic
     - [Pursuit Evasion](https://github.com/dhavalsalwala/rl-algos/blob/master/rltechniques/multi_agent)
 
   #### Single Agent RL
