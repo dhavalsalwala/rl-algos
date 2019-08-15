@@ -97,10 +97,10 @@ def dec_roll_out(env, agents, sampler, max_path_length, animated=False, speedup=
     for sample in samples:
         for index in range(n_agents):
             observations[index].append(sample[0][index][0])
-            actions[index].append(sample[1][index])
-            rewards[index].append(sample[2][index])
+            actions[index].append(sample[1][index][0])
+            rewards[index].append(sample[2][index][0])
             next_observations[index].append(sample[3][index][0])
-            done_list[index].append(sample[4][index])
+            done_list[index].append(sample[4][index][0])
 
     sampler.old_observation_list = next_observation_list
     sampler.done = done

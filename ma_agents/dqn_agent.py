@@ -16,7 +16,7 @@ class MADQN(BatchMADQN, Serializable):
         Serializable.quick_init(self, locals())
         if optimizer is None:
             default_args = dict(
-                batch_size=None,
+                batch_size=64,
                 max_epochs=1, )
             if optimizer_args is None:
                 optimizer_args = default_args
@@ -41,23 +41,24 @@ class MADQN(BatchMADQN, Serializable):
         self.s_avg_rewards = tf.placeholder(tf.float32, name='s_avg_rewards')
         self.s_total_rewards = tf.placeholder(tf.float32, name='s_total_rewards')
 
-        # target = tf.placeholder(tf.float32, (None, 1), name='target')
+        target = tf.placeholder(tf.float32, name='target')
         discount_factor = tf.constant(self.discount, name='discount_factor')
 
-        next_q_value = self.policy.dist_info_sym(next_observations)['prob']
-        next_q_value_target_prob = self.target_policy.dist_info_sym(next_observations)['prob']
+        # next_q_value = self.policy.dist_info_sym(next_observations)['prob']
+        # next_q_value_target_prob = self.target_policy.dist_info_sym(next_observations)['prob']
 
-        next_q_value_target = \
-            tf.reduce_sum(tf.mul(next_q_value_target_prob, tf.one_hot(tf.arg_max(next_q_value, 1), self.env.action_space.n)), reduction_indices=1)
+        # next_q_value_target = \
+        #    tf.reduce_sum(tf.mul(next_q_value_target_prob, tf.one_hot(tf.arg_max(next_q_value, 1),
+        #    self.env.action_space.n)), reduction_indices=1)
 
-        target_q_value = rewards + discount_factor * next_q_value_target * (1. - done)
+        # target_q_value = rewards + discount_factor * next_q_value_target * (1. - done)
 
         output_prob = self.policy.dist_info_sym(observations)['prob']
         output_q_value = tf.reduce_sum(tf.mul(output_prob, actions), reduction_indices=1)
 
-        loss = tf.reduce_mean(tf.squared_difference(output_q_value, target_q_value))
+        loss = tf.reduce_mean(tf.squared_difference(output_q_value, target))
 
-        input_list = [observations, next_observations, rewards, done, actions]
+        input_list = [observations, actions, target]
         self.optimizer.update_opt(loss=loss, target=self.policy, inputs=input_list)
 
         self.writer = tf.train.SummaryWriter("summary/")
@@ -69,7 +70,7 @@ class MADQN(BatchMADQN, Serializable):
 
     @overrides
     def optimize_policy(self, itr, samples_data):
-        inputs = ext.extract(samples_data, "observations", "next_observations", "rewards", "done", "actions")
+        inputs = ext.extract(samples_data, "observations", "actions", "target")
 
         self.optimizer.optimize(inputs)
         self.loss_after = self.optimizer.loss(inputs)

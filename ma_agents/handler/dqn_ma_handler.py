@@ -128,7 +128,6 @@ class BatchMADQN(RLAlgorithm):
                     self.sampler.done = True
                     self.log_statistics(itr, time_step+1)
                     logger.log("Logging statistics...")
-
                     logger.log("Logging diagnostics...")
                     self.log_diagnostics(paths)
 

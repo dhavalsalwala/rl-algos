@@ -1,6 +1,7 @@
-import itertools
 import random
 from collections import deque
+
+import itertools
 import numpy as np
 from rllab.misc import tensor_utils
 from rllab.misc.overrides import overrides
@@ -26,7 +27,7 @@ class ExpReplayMASampler(BatchMASampler):
         return len(self.replay_memory)
 
     def get_sample_from_replay_memory(self):
-        n = min(round(self.algo.batch_size/len(self.algo.env.agents)), len(self.replay_memory))
+        n = min(self.algo.batch_size, len(self.replay_memory))
         return random.sample(self.replay_memory, n)
 
     def obtain_random_samples(self, pre_trained_size):
@@ -63,38 +64,29 @@ class ExpReplayMASampler(BatchMASampler):
     def process_samples(self, itr, paths):
 
         paths = list(itertools.chain.from_iterable(paths))
-        if not self.algo.policy.recurrent:
-            observations = tensor_utils.concat_tensor_list([path["observations"] for path in paths])
-            next_observations = tensor_utils.concat_tensor_list([path["next_observations"] for path in paths])
-            actions = tensor_utils.concat_tensor_list([path["actions"] for path in paths])
-            rewards = tensor_utils.concat_tensor_list([path["rewards"] for path in paths])
-            done = tensor_utils.concat_tensor_list([path["done"] for path in paths])
+        next_observations = tensor_utils.concat_tensor_list([path["next_observations"] for path in paths])
+        rewards = tensor_utils.concat_tensor_list([path["rewards"] for path in paths])
+        done = tensor_utils.concat_tensor_list([path["done"] for path in paths])
 
-            target = []
+        target = []
 
-            next_q_value = self.algo.policy.get_actions(next_observations)[1]['prob']
-            next_q_value_target = self.algo.target_policy.get_actions(next_observations)[1]['prob']
-            for i in range(self.algo.batch_size):
-                action = np.argmax(next_q_value[i])
-                if done[i]:
-                    target.append(rewards[i])
-                else:
-                    target.append(rewards[i] + self.algo.discount * next_q_value_target[i][action])
+        next_q_value = self.algo.policy.get_actions(next_observations)[1]['prob']
+        next_q_value_target = self.algo.target_policy.get_actions(next_observations)[1]['prob']
+        for i in range(len(rewards)):
+            action = np.argmax(next_q_value[i])
+            if done[i]:
+                target.append(rewards[i])
+            else:
+                target.append(rewards[i] + self.algo.discount * next_q_value_target[i][action])
 
-            samples_data = dict(
-                observations=observations,
-                next_observations=next_observations,
-                actions=actions,
-                rewards=rewards,
-                target=np.array([each for each in target]),
-                done=done,
-                paths=paths,
-            )
-
-        else:
-            pass
+        samples_data = dict(
+            observations=tensor_utils.concat_tensor_list([path["observations"] for path in paths]),
+            next_observations=next_observations,
+            actions=tensor_utils.concat_tensor_list([path["actions"] for path in paths]),
+            rewards=rewards,
+            target=np.array(target),
+            done=done,
+            paths=paths,
+        )
 
         return samples_data
-
-
-
