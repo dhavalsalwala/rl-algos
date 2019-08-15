@@ -1,8 +1,5 @@
 [submodule "modules/MADRL"]
 	path = modules/MADRL
 	url = git@github.com:dhavalsalwala/MADRL.git
-[submodule "modules/multiagent-particle-envs"]
-	path = modules/multiagent-particle-envs
-	url = https://github.com/dhavalsalwala/multiagent-particle-envs
 [submodule "MADRL"]
 	branch = master
