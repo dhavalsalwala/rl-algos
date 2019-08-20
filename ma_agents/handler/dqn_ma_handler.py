@@ -159,11 +159,9 @@ class BatchMADQN(RLAlgorithm):
         logger.record_tabular('Iteration', itr)
         logger.record_tabular('NofTrajectories', total_steps)
 
-        avg_rewards = np.mean(rewards)
-        logger.record_tabular('AverageReturn', avg_rewards)
+        logger.record_tabular('AverageReturn', np.mean(rewards))
 
-        total_rewards = np.sum(rewards)
-        logger.record_tabular('TotalReturn', total_rewards)
+        logger.record_tabular('TotalReturn', np.sum(rewards))
 
         logger.record_tabular('MaxReturn', np.max(rewards))
         logger.record_tabular('MinReturn', np.min(rewards))
