@@ -19,7 +19,7 @@ class MAA2C(A2CMABase, Serializable):
         super(MAA2C, self).__init__(env=env, **kwargs)
         if optimizer is None:
             default_args = dict(
-                batch_size=None,
+                batch_size=64,
                 max_epochs=1,
                 tf_optimizer_cls=tf.train.RMSPropOptimizer,
                 tf_optimizer_args=dict(learning_rate=7e-4, decay=0.99, epsilon=1e-5)

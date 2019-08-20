@@ -21,7 +21,7 @@ class A2CMASampler(BatchMASampler):
         paths = base_sampler.sample_paths_a2c(
             policy_params=cur_policy_params,
             env_params=cur_env_params,
-            max_samples=self.algo.max_path_length*len(self.algo.env.agents),
+            max_samples=self.algo.batch_size,
             max_path_length=self.algo.max_path_length,
             ma_mode=self.algo.ma_mode,
             scope=self.algo.scope,)
