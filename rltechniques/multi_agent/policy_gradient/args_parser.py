@@ -43,7 +43,7 @@ class ARGParser(object):
             '--algo', type=str, default='',
             help='Add tf or th to the algo name to run tensorflow or theano version')
 
-        parser.add_argument('--max_path_length', type=int, default=500)
+        parser.add_argument('--max_path_length', type=int, default=400)
         parser.add_argument('--batch_size', type=int, default=12000)
         parser.add_argument('--n_parallel', type=int, default=1)
         parser.add_argument('--resume_from', type=str, default=None,

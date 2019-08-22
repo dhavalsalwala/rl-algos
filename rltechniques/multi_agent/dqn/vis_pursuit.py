@@ -18,7 +18,7 @@ from rltechniques.multi_agent import Visualizer
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('filename', type=str)
-    parser.add_argument('--vid', type=str, default='/tmp/madrl.mp4')
+    parser.add_argument('--vid', type=str, default='madrl.mp4')
     parser.add_argument('--deterministic', action='store_true', default=False)
     parser.add_argument('--heuristic', action='store_true', default=False)
     parser.add_argument('--evaluate', action='store_true', default=True)
