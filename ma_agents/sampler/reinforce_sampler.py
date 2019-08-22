@@ -29,16 +29,6 @@ class ReinforceMASampler(BatchMASampler):
 
         all_path_baselines = [self.algo.baseline.predict(path) for path in paths]
 
-        '''
-        for index, path in enumerate(paths):
-            path_baselines = np.append(all_path_baselines[index], 0)
-            deltas = path["rewards"] + self.algo.discount * path_baselines[1:] - path_baselines[:-1]
-            path["advantages"] = special.discount_cumsum(deltas, self.algo.discount * self.algo.gae_lambda)
-            path["returns"] = special.discount_cumsum(path["rewards"], self.algo.discount)
-            baselines.append(path_baselines[:-1])
-            returns.append(path["returns"])
-        '''
-
         for index, path in enumerate(paths):
             path_baselines = np.append(all_path_baselines[index], 0)
             total_return = self.get_total_discounted_returns(path["rewards"])

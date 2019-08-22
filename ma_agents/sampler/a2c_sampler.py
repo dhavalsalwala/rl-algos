@@ -46,27 +46,14 @@ class A2CMASampler(BatchMASampler):
         td_error_advantage = []
 
         for agent in paths:
-
-            R = 0
-            if agent['done_list'][-1]:
-                R = self.algo.value_estimator.predict([agent['next_observations'][-1]])
-
-            # value_next = self.algo.value_estimator.predict([agent['next_observations'][-1]])
+            value_next = self.algo.value_estimator.predict([agent['next_observations'][-1]])
             values = self.algo.value_estimator.predict(agent['observations'])
 
-            n = len(agent['observations'])
-            td = np.zeros(n)
-            adv = np.zeros(n)
-            for i in range(n - 1, -1, -1):
-                R = agent['rewards'][i] + self.algo.discount * R
-                td[i] = R
-                adv[i] = R - values[i]
+            td_target_tmp = self.get_target_returns(agent['rewards'], agent['done_list'], value_next)
+            td_error_advantage_tmp = td_target_tmp - values
 
-            # td_target_tmp = self.get_target_returns(agent['rewards'], agent['done_list'], value_next)
-            # td_error_advantage_tmp = td_target_tmp - values
-
-            td_target.append(td)
-            td_error_advantage.append(adv)
+            td_target.append(td_target_tmp)
+            td_error_advantage.append(td_error_advantage_tmp)
 
         samples_data = dict(
             observations=tensor_utils.concat_tensor_list([path["observations"] for path in paths]),
